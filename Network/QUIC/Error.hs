@@ -144,7 +144,7 @@ err2int FlowControlInvalidWindow               = 0x40
 err2int ConnectionIpPooled                     = 0x3e
 err2int TooManyOutstandingSentPackets          = 0x44
 err2int TooManyOutstandingRecivedPackets       = 0x45
-err2int ConnectionCancelled       = 0x46
+err2int ConnectionCancelled                    = 0x46
 err2int BadPacketLossRate                      = 0x47
 err2int PublicResetPortHandshake               = 0x49
 err2int TimeoutsWithOpenStreams                = 0x4a
@@ -181,7 +181,7 @@ err2int ConnectionMigrationNoNewNetwork        = 0x53
 err2int ConnectionMigrationNonMigratableStream = 0x54
 err2int TooManyFrameGaps                       = 0x5d
 err2int StreamSequencerInvalidState            = 0x5f
-err2int TooManySessionsOnServer                = 0x601
+err2int TooManySessionsOnServer                = 0x60
 
 int2err  :: Int -> ErrorCodes
 int2err _ =  undefined
