@@ -1,0 +1,46 @@
+name:                quic-prototype
+version:             0.1.0.0
+synopsis:            QUIC protocol prototype implementation
+description:         QUIC protocol prototype implementation
+homepage:            https://github.com/keizo042/quic-prototype#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Kouichi Nakanishi
+maintainer:          keizo.bookman@gmail.com
+copyright:           2017 Kouichi Nakanishi
+category:            Network
+build-type:          Simple
+extra-source-files:  README.md
+                     TODO.md
+                     CONTRIBUTE.md
+cabal-version:       >=1.10
+
+library
+  exposed-modules:     Network.QUIC
+                       Network.QUIC.Decode
+                       Network.QUIC.Encode
+                       Network.QUIC.Types
+                       Network.QUIC.Frame
+                       Network.QUIC.Header
+                       Network.QUIC.Error
+  
+  build-depends:        base >= 4.7 && < 5
+                      , bytestring
+                      , bytestring-builder
+                      , stm
+                      , binary
+      
+--  ghc-options:         -Wall
+  default-language:    Haskell2010
+
+Test-Suite spec
+  type:             exitcode-stdio-1.0
+  default-language: Haskell2010
+  hs-source-dirs:   test
+  ghc-options:      -Wall
+  main-is:          Spec.hs
+  build-depends:    base >= 4.7 && < 5
+
+source-repository head
+  type:     git
+  location: https://github.com/keizo042/quic-prototype

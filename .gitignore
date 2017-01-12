@@ -1,0 +1,10 @@
+,/
+dist/
+.stack-work
+.cabal-sandbox
+tags
+TAGS
+CTAGS
+GTAGS
+cscope
+.cscope
