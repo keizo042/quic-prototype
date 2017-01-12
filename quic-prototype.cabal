@@ -28,6 +28,8 @@ library
                       , bytestring
                       , bytestring-builder
                       , stm
+                      , time
+                      , uuid
                       , binary
       
 --  ghc-options:         -Wall
