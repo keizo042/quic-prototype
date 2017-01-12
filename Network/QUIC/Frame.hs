@@ -4,7 +4,7 @@ module Network.QUIC.Frame
     , Frame(..)
     , int2FrameTypes
   ) where
-import Data.Bits
+import           Data.Bits
 import           Data.ByteString.Lazy
 import           Network.QUIC.Error   (ErrorCodes (..))
 
@@ -21,11 +21,28 @@ data FrameTypes  = STREAM { fin :: Bool,  dataLength :: Bool, id:: Int}
                  | Undefined
                  deriving (Show, Eq)
 
+s2frametype i =  STREAM fin len conId
+  where
+      fin = (i .&. 0x40 ) == 0x40
+      len = (i .&. 0x1c ) == 0x1c
+      conId = (case ( i .&. 0x03) of
+                   0x00 -> 8
+                   0x01 -> 16
+                   0x02 -> 32
+                   0x03 -> 64
+                   _    -> 0)
+
+
+ack2frametype i = ACK frame l  bl
+  where
+    frame = undefined
+    l = undefined
+    bl = undefined
 
 int2FrameTypes :: Int -> FrameTypes
 int2FrameTypes i
-  | ( i .&. 0x80 ) == 0x80 =  undefined
-  | ( i .&. 0x40 ) == 0x40 =  undefined
+  | ( i .&. 0x80 ) == 0x80 =  s2frametype i
+  | ( i .&. 0x40 ) == 0x40 =  ack2frametype i
   | otherwise = i2f i
   where
     i2f 0x00 = PADDING

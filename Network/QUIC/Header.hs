@@ -11,8 +11,8 @@ module Network.QUIC.Header
   ) where
 import           Data.Int
 
-data Header = Header{
-                    common :: CommonHeader
+data Header = Header{ common :: CommonHeader
+                    , aead :: AEAD
                     } deriving Show
 
 
@@ -25,7 +25,6 @@ data CommonHeader = CommonHeader{
   ,quicVersion          :: Maybe Int32
   ,diversificationNonce :: Integer
   ,packetNumber         :: Integer
-  , aead                :: AEAD
   } deriving Show
 
 data NumberSize = Byte6

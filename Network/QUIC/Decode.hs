@@ -35,7 +35,7 @@ decodeFrame s bs  =  case ( int2FrameTypes $ fromIntegral $ toInteger $ BSL.head
                               BLOCKED -> decodeFrameBlocked s rest
                               STOP_WAITING -> decodeFrameStopWaiting s rest
                               PING -> decodeFramePing s rest
-                              _ ->  Left Error.InvalidPacketHeader
+                              _ ->  Left Error.InvalidPacketError
   where
     rest = BSL.tail bs
 
