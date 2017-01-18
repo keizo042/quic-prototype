@@ -9,7 +9,10 @@ module Network.QUIC.Types
   where
 
 
-data Settings = Settings {} deriving Show
+data Settings = Settings { idleTimeout :: Int
+                         , mtuSize :: Int
+                         , mspc :: Int
+    } deriving Show
 
 type Nonce = Int
 
