@@ -35,6 +35,7 @@ library
                       , time
                       , uuid
                       , binary
+                      , tls
       
 --  ghc-options:         -Wall
   default-language:    Haskell2010
