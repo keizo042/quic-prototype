@@ -1,14 +1,15 @@
 module Network.QUIC.Frame
   (
-      FrameTypes(..)
+      FrameType(..)
     , Frame(..)
-    , int2FrameTypes
+    , word82FrameType
   ) where
+import Data.Word
 import           Data.Bits
 import           Data.ByteString.Lazy
 import           Network.QUIC.Error   (ErrorCodes (..))
 
-data FrameTypes  = STREAM { fin :: Bool,  dataLength :: Bool, id:: Int}
+data FrameType  = STREAM { fin :: Bool,  dataLength :: Bool, id:: Int}
                  | ACK{frame :: Bool, largestacked :: Int, blockLength :: Int }
                  | PADDING
                  | RST_STREAM
@@ -23,14 +24,14 @@ data FrameTypes  = STREAM { fin :: Bool,  dataLength :: Bool, id:: Int}
 
 s2frametype i =  STREAM fin len conId
   where
-      fin = (i .&. 0x40 ) == 0x40
-      len = (i .&. 0x1c ) == 0x1c
-      conId = (case ( i .&. 0x03) of
+      fin = i .&. 0x40  == 0x40
+      len = i .&. 0x1c  == 0x1c
+      conId = case i .&. 0x03 of
                    0x00 -> 8
                    0x01 -> 16
                    0x02 -> 32
                    0x03 -> 64
-                   _    -> 0)
+                   _    -> 0
 
 
 ack2frametype i = ACK frame l  bl
@@ -39,10 +40,10 @@ ack2frametype i = ACK frame l  bl
     l = undefined
     bl = undefined
 
-int2FrameTypes :: Int -> FrameTypes
-int2FrameTypes i
-  | ( i .&. 0x80 ) == 0x80 =  s2frametype i
-  | ( i .&. 0x40 ) == 0x40 =  ack2frametype i
+word82FrameType :: Word8 -> FrameType
+word82FrameType i
+  | i .&. 0x80 == 0x80 =  s2frametype i
+  | i .&. 0x40 == 0x40 =  ack2frametype i
   | otherwise = i2f i
   where
     i2f 0x00 = PADDING
@@ -59,26 +60,28 @@ data AckBlock = AckBlock { numberBlocks        :: Int
                          , firstAckBlockLength :: Int
                          , gapToNextBlock      :: Int
                          , ackBlockLength      :: Int
-                         }deriving Show
+                         } deriving Show
 
 data AckTimeStamp = AckTimeStamp { deltaLargestAcked  :: Int
                                  , timeSincePrevAcked :: Int
                                  } deriving Show
 
-data Frame = Stream  { streamStreamId   :: Int
+data Frame = Stream  { streamFrameType :: FrameType
+                     , streamStreamId   :: Int
                      , streamOffSet     :: Int
                      , streamDataLength :: Int
                      , streamStreamData :: ByteString
                      }
-           | Ack  { largestAcked         :: Int
+           | Ack  {  ackFrameType :: Int
+                  , ackLargestAcked         :: Int
                   , ackDelay             :: Int
                   , ackBlock             :: [AckBlock]
                   , ackNumTimeStamps     :: Int
                   , ackDeltaLargestAcked :: Maybe Int
-                  , timeLargestAcked     :: Maybe Int
+                  , ackTimeLargestAcked     :: Maybe Int
                   , ackTimeStamps        :: Maybe [AckTimeStamp]
                   }
-           | StopWaiting  { leastUnackedDelta :: Int }
+           | StopWaiting  { sstopWaitingLeastUnackedDelta :: Int }
            | WindowUpdate { windowUpdateStreamId   :: Int
                           , windowUpdateByteOffset :: Int
                           }
@@ -90,10 +93,11 @@ data Frame = Stream  { streamStreamId   :: Int
            | Padding
            | Ping
            | ConnectionClose  { connClosedErrorCode :: ErrorCodes
-                              , reasonPahse         :: ByteString
+                              , connClosedreasonPahse         :: ByteString
                               }
            | Goaway { goAwayErrorCode        :: ErrorCodes
                     , goAwayLastGoodStreamId :: Int
                     , goAwayReasonPhase      :: ByteString
                     }
+           | FrameError { frameError :: ErrorCodes }
            deriving (Show)

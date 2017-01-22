@@ -7,7 +7,7 @@ import Data.ByteString      (ByteString (..))
 import qualified Data.ByteString.Lazy as BSL
 import           Network.QUIC.Error   (QUICResult (..))
 import qualified Network.QUIC.Error   as Error
-import Network.QUIC.Frame   (Frame(..), FrameTypes(..))
+import Network.QUIC.Frame   (Frame(..), FrameType(..))
 import qualified Network.QUIC.Frame   as Frame
 import Network.QUIC.Header  (CommonHeader (..), Header (..))
 import Network.QUIC.Types   (Settings(..))
@@ -15,39 +15,49 @@ import Network.QUIC.Types   (Settings(..))
 encodeHeader :: Settings ->  Header -> ByteString
 encodeHeader = undefined
 
-encodeFrame :: Settings -> Frame -> Maybe ByteString
+encodeFrame :: Settings -> Frame -> QUICResult ByteString
 encodeFrame s frame = case frame of
-                           _ ->  Nothing
+                           Stream{}         -> encodeFrameStream s frame
+                           Ack{}              -> encodeFrameAck s frame
+                           RstStream{}        -> encodeFrameRstStream s frame
+                           WindowUpdate{}       -> encodeFrameWindowUpdate s frame
+                           Blocked{}              -> encodeFrameBlocked s frame
+                           Padding                  -> encodeFramePadding  s  frame
+                           Ping                     -> encodeFramePing s  frame
+                           ConnectionClose{}    -> encodeFrameConnectionClose s frame
+                           Goaway{}           -> encodeFrameGoAway  s  frame
+                           StopWaiting{}          -> encodeFrameStopWaiting s frame
+                           FrameError e -> Left e
   where
-    encodeFrameStream :: Settings -> Frame -> ByteString
+    encodeFrameStream :: Settings -> Frame -> QUICResult ByteString
     encodeFrameStream = undefined
 
-    encodeFrameAck :: Settings -> Frame -> ByteString
+    encodeFrameAck :: Settings -> Frame -> QUICResult ByteString
     encodeFrameAck = undefined
 
-    encodeFramePadding :: Settings -> Frame -> ByteString
+    encodeFramePadding :: Settings -> Frame -> QUICResult ByteString
     encodeFramePadding = undefined
 
-    encodeFrameRstStream :: Settings -> Frame -> ByteString
+    encodeFrameRstStream :: Settings -> Frame -> QUICResult ByteString
     encodeFrameRstStream = undefined
 
-    encodeFrameConnClose :: Settings -> Frame -> ByteString
-    encodeFrameConnClose = undefined
+    encodeFrameConnectionClose :: Settings -> Frame -> QUICResult ByteString
+    encodeFrameConnectionClose = undefined
 
-    encodeFrameGoAway :: Settings -> Frame -> ByteString
+    encodeFrameGoAway :: Settings -> Frame -> QUICResult ByteString
     encodeFrameGoAway = undefined
 
-    encodeFrameWindowUpdate :: Settings -> Frame -> ByteString
+    encodeFrameWindowUpdate :: Settings -> Frame -> QUICResult ByteString
     encodeFrameWindowUpdate = undefined
 
-    encodeFrameBlocked :: Settings -> Frame -> ByteString
+    encodeFrameBlocked :: Settings -> Frame -> QUICResult ByteString
     encodeFrameBlocked = undefined
 
-    encodeFrameStopWaiting :: Settings -> Frame -> ByteString
+    encodeFrameStopWaiting :: Settings -> Frame -> QUICResult ByteString
     encodeFrameStopWaiting = undefined
 
-    encodeFramePing :: Settings -> Frame -> ByteString
+    encodeFramePing :: Settings -> Frame -> QUICResult ByteString
     encodeFramePing = undefined
 
-encodeCommonHeader :: Settings -> CommonHeader -> ByteString
+encodeCommonHeader :: Settings -> CommonHeader -> QUICResult ByteString
 encodeCommonHeader = undefined

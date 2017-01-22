@@ -6,7 +6,7 @@ module Network.QUIC
   , encodeFrame
   , Header(..)
   , Frame(..)
-  , FrameTypes(..)
+  , FrameType(..)
   )where
 
 import Network.QUIC.Header
