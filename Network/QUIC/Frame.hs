@@ -8,8 +8,9 @@ import Data.Word
 import           Data.Bits
 import           Data.ByteString.Lazy
 import           Network.QUIC.Error   (ErrorCodes (..))
+import qualified Network.QUIC.Header as H
 
-data FrameType  = STREAM { fin :: Bool,  dataLength :: Bool, id:: Int}
+data FrameType  = STREAM { fin :: Bool,  dataLength :: Bool, offset :: H.ByteSize, id:: Int}
                  | ACK{frame :: Bool, largestacked :: Int, blockLength :: Int }
                  | PADDING
                  | RST_STREAM
@@ -33,7 +34,7 @@ word82FrameType i
   where
 
     s2frametype :: Word8 -> FrameType
-    s2frametype i =  STREAM fin len conId
+    s2frametype i =  STREAM fin len H.Byte6 conId
       where
           fin = i .&. 0x40  == 0x40
           len = i .&. 0x1c  == 0x1c

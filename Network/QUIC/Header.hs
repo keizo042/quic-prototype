@@ -28,7 +28,7 @@ data ByteSize = Byte6
                 | Byte4
                 | Byte2
                 | Byte1
-                deriving Show
+                deriving (Show, Eq)
 
 byteSize2int :: ByteSize -> Int
 byteSize2int Byte6 = 0x3

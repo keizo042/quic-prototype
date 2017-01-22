@@ -26,8 +26,8 @@ decodeCommonHeader s bs = undefined
 
 decodeFrame :: Settings -> ByteString -> QUICResult Frame
 decodeFrame s bs  =  case typ of
-                        frametype@(STREAM f d id)     -> decodeFrameStream            s   frametype rest
-                        frametype@(ACK frame l len)   -> decodeFrameAck               s   frametype rest
+                        frametype@(STREAM{})     -> decodeFrameStream            s   frametype rest
+                        frametype@(ACK{})   -> decodeFrameAck               s   frametype rest
                         PADDING                       -> decodeFramePadding           s   rest
                         RST_STREAM                    -> decodeFrameRstStream         s   rest
                         CONNECTION_CLOSE              -> decodeFrameConnectionClosed  s   rest
@@ -43,10 +43,19 @@ decodeFrame s bs  =  case typ of
     rest = BSL.tail bs
 
     decodeFrameStream :: Settings -> FrameType -> ByteString -> QUICResult Frame
-    decodeFrameStream = undefined
+    decodeFrameStream s (STREAM fin offset d streamId) bs = undefined
       where
-        decodeFrameStreamHeader :: ByteString -> QUICResult (Frame, ByteString)
-        decodeFrameStreamHeader = undefined
+        decodeFrameStreamHeader :: Settings -> ByteString -> QUICResult (Frame, ByteString)
+        decodeFrameStreamHeader settings bs = Right $ (Stream{}, rest)
+          where
+            rest :: ByteString
+            rest = undefined
+            streamId :: ByteString -> Int
+            streamId = undefined
+            offset :: ByteString -> Int
+            offset  = undefined
+            dlength :: ByteString -> Int
+            dlength = undefined
 
     decodeFrameAck :: Settings -> FrameType -> ByteString -> QUICResult Frame
     decodeFrameAck = undefined
