@@ -21,10 +21,6 @@ import           Network.QUIC.Header  (CommonHeader (..), Flags (..),
                                        Header (..))
 import           Network.QUIC.Types   (Nonce, Settings (..))
 
-check :: Error.ErrorCodes -> Either (ByteString, BG.ByteOffset, String) (ByteString, BG.ByteOffset, Frame) -> QUICResult Frame
-check e (Right (_, _, f)) = Right f
-check e (Left{}) = Left e
-
 decodeHeader :: Settings -> ByteString -> QUICResult (Header, ByteString)
 decodeHeader s b = undefined
 
@@ -78,18 +74,25 @@ decodeFrame s bytes  = case (word82FrameType b) of
                           
 
     decodeFrameStopWaiting :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFrameStopWaiting = undefined
+    decodeFrameStopWaiting s bs =  case BG.runGetOrFail get bs of
+                                   Right (bs, _, frame) -> Right (frame, bs)
+                                   Left _               -> Left Error.InvalidStopWaitingData
       where
+        get :: BG.Get Frame 
         get = undefined
 
     decodeFrameWindowUpdate :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFrameWindowUpdate = undefined
+    decodeFrameWindowUpdate s bs = case BG.runGetOrFail get bs of
+                                   Right (bs, _, frame) -> Right (frame, bs)
+                                   Left _               -> Left Error.InvalidWindowUpdateData
       where
         get :: BG.Get Frame 
         get = undefined
 
     decodeFrameBlocked :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFrameBlocked = undefined
+    decodeFrameBlocked s bs = case BG.runGetOrFail get bs of
+                                   Right (bs, _, frame) -> Right (frame, bs)
+                                   Left _               -> Left Error.InvalidFrameData
       where
         get :: BG.Get Frame
         get = undefined
@@ -97,30 +100,37 @@ decodeFrame s bytes  = case (word82FrameType b) of
     decodeFrameCongestionFeedBack :: Settings -> ByteString -> QUICResult (Frame, ByteString)
     decodeFrameCongestionFeedBack s bs = case BG.runGetOrFail get bs of
                                         Right (bs, _, frame) -> Right (frame, bs)
-                                        Left (_, _, _) -> Left Error.InvalidConnectionCloseData
+                                        Left _ -> Left Error.InvalidConnectionCloseData
       where 
         get = undefined
 
     decodeFramePadding :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFramePadding = undefined
-      where
-        get = undefined
+    decodeFramePadding s bs =  Right (Padding, BSL.empty)
 
     decodeFrameRstStream :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFrameRstStream = undefined
+    decodeFrameRstStream s bs =  case BG.runGetOrFail get bs of
+                                      Right (bs, _, frame) -> Right (frame, bs)
+                                      Left _    -> Left Error.InvalidRstStreamData
       where
+        get :: BG.Get Frame
         get = undefined
 
     decodeFramePing :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFramePing = undefined
+    decodeFramePing s bs = Right (Ping, BSL.empty)
 
     decodeFrameConnectionClosed :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFrameConnectionClosed = undefined
+    decodeFrameConnectionClosed s bs =  case BG.runGetOrFail get bs of
+                                             Right (bs, _, frame) -> Right (frame, bs)
+                                             Left _ -> Left Error.InvalidConnectionCloseData
       where
+        get :: BG.Get Frame
         get = undefined
 
     decodeFrameGoaway :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFrameGoaway = undefined
+    decodeFrameGoaway s bs =  case BG.runGetOrFail get bs of
+                              Right (bs, _, frame) -> Right (frame, bs)
+                              Left _ -> Left Error.InvalidGoAwayData
       where 
+        get :: BG.Get Frame
         get = undefined
 
