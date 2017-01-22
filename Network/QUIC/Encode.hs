@@ -3,6 +3,7 @@ module Network.QUIC.Encode
     encodeHeader
   , encodeFrame
   ) where
+
 import Data.ByteString      (ByteString (..))
 import qualified Data.ByteString.Lazy as BSL
 import           Network.QUIC.Error   (QUICResult (..))
