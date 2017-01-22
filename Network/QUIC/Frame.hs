@@ -2,6 +2,8 @@ module Network.QUIC.Frame
   (
       FrameType(..)
     , Frame(..)
+    , AckBlock(..)
+    , AckTimeStamp(..)
     , word82FrameType
   ) where
 import Data.Word

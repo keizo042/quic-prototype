@@ -6,6 +6,7 @@ module Network.QUIC.Error
     , QUICResult
   )
   where
+import Data.Binary
 
 type QUICResult a = Either ErrorCodes a
 

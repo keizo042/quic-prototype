@@ -18,11 +18,11 @@ encodeHeader = undefined
 
 encodeFrame :: Settings -> Frame -> QUICResult ByteString
 encodeFrame s frame = case frame of
-                           Stream{}         -> encodeFrameStream s frame
-                           Ack{}              -> encodeFrameAck s frame
-                           RstStream{}        -> encodeFrameRstStream s frame
-                           WindowUpdate{}       -> encodeFrameWindowUpdate s frame
-                           Blocked{}              -> encodeFrameBlocked s frame
+                           Stream{}                 -> encodeFrameStream s frame
+                           Ack{}                    -> encodeFrameAck s frame
+                           RstStream{}              -> encodeFrameRstStream s frame
+                           WindowUpdate{}           -> encodeFrameWindowUpdate s frame
+                           Blocked{}                -> encodeFrameBlocked s frame
                            Padding                  -> encodeFramePadding  s  frame
                            Ping                     -> encodeFramePing s  frame
                            ConnectionClose{}    -> encodeFrameConnectionClose s frame
