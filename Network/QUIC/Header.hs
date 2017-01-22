@@ -17,8 +17,8 @@ data Header = Header{ common :: CommonHeader
 
 
 data CommonHeader = CommonHeader{
-   headerFlags                 :: Flags
-  ,headerConnectionId               :: Maybe Int64
+   headerFlags                :: Flags
+  ,headerConnectionId         :: Maybe Int64
   ,headerQuicVersion          :: Maybe Int32
   ,headerDiversificationNonce :: Integer
   ,headerPacketNumber         :: Integer
