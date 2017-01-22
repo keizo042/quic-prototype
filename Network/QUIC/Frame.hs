@@ -22,23 +22,8 @@ data FrameType  = STREAM { fin :: Bool,  dataLength :: Bool, id:: Int}
                  | Undefined
                  deriving (Show, Eq)
 
-s2frametype i =  STREAM fin len conId
-  where
-      fin = i .&. 0x40  == 0x40
-      len = i .&. 0x1c  == 0x1c
-      conId = case i .&. 0x03 of
-                   0x00 -> 8
-                   0x01 -> 16
-                   0x02 -> 32
-                   0x03 -> 64
-                   _    -> 0
 
 
-ack2frametype i = ACK frame l  bl
-  where
-    frame = undefined
-    l = undefined
-    bl = undefined
 
 word82FrameType :: Word8 -> FrameType
 word82FrameType i
@@ -46,6 +31,26 @@ word82FrameType i
   | i .&. 0x40 == 0x40 =  ack2frametype i
   | otherwise = i2f i
   where
+
+    s2frametype :: Word8 -> FrameType
+    s2frametype i =  STREAM fin len conId
+      where
+          fin = i .&. 0x40  == 0x40
+          len = i .&. 0x1c  == 0x1c
+          conId = case i .&. 0x03 of
+                       0x00 -> 8
+                       0x01 -> 16
+                       0x02 -> 32
+                       0x03 -> 64
+                       _    -> 0
+    ack2frametype :: Word8 -> FrameType
+    ack2frametype i = ACK frame l  bl
+      where
+        frame = undefined
+        l = undefined
+        bl = undefined
+
+    i2f :: Word8 -> FrameType
     i2f 0x00 = PADDING
     i2f 0x01 = RST_STREAM
     i2f 0x02 = CONNECTION_CLOSE
@@ -56,9 +61,9 @@ word82FrameType i
     i2f 0x07 = PING
     i2f _    = Network.QUIC.Frame.Undefined
 
-data AckBlock = AckBlock { numberBlocks        :: Int
-                         , firstAckBlockLength :: Int
-                         , gapToNextBlock      :: Int
+data AckBlock = AckBlock { ackBlocknumberBlocks        :: Int
+                         , ackBlockfirstAckBlockLength :: Int
+                         , ackBlockgapToNextBlock      :: Int
                          , ackBlockLength      :: Int
                          } deriving Show
 
@@ -100,4 +105,4 @@ data Frame = Stream  { streamFrameType :: FrameType
                     , goAwayReasonPhase      :: ByteString
                     }
            | FrameError { frameError :: ErrorCodes }
-           deriving (Show)
+           deriving Show

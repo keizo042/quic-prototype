@@ -51,6 +51,7 @@ decodeFrame s bs  =  case typ of
     decodeFrameAck :: Settings -> FrameType -> ByteString -> QUICResult Frame
     decodeFrameAck = undefined
       where
+        decodeFrameAckHeader :: Settings -> QUICResult Frame
         decodeFrameAckHeader = undefined
 
     decodeFrameStopWaiting :: Settings -> ByteString -> QUICResult Frame
@@ -76,7 +77,3 @@ decodeFrame s bs  =  case typ of
 
     decodeFrameGoaway :: Settings -> ByteString -> QUICResult Frame
     decodeFrameGoaway = undefined
-
-
-decodeNonce :: Settings -> ByteString -> Nonce
-decodeNonce = undefined
