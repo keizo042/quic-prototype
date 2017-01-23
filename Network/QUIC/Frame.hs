@@ -74,9 +74,7 @@ word82FrameType i
     i2f 0x07 = PING
     i2f _    = Network.QUIC.Frame.Undefined
 
-data AckBlock = AckBlock { ackBlocknumberBlocks        :: Int
-                         , ackBlockfirstAckBlockLength :: Int
-                         , ackBlockgapToNextBlock      :: Int
+data AckBlock = AckBlock { ackBlockgapToNextBlock      :: Maybe Int
                          , ackBlockLength      :: Int
                          } deriving Show
 
@@ -89,7 +87,7 @@ data Frame = Stream  { streamFrameType :: FrameType
                      , streamOffSet     :: Int
                      , streamStreamData :: ByteString
                      }
-           | Ack  {  ackFrameType :: Int
+           | Ack  {  ackFrameType :: FrameType
                   , ackLargestAcked         :: Int
                   , ackDelay             :: Int
                   , ackBlock             :: [AckBlock]

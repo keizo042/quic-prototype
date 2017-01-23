@@ -86,17 +86,60 @@ decodeFrame s bytes  = case (word82FrameType b) of
     decodeFrameStream _ _ _ = Left Error.InvalidFrameData
 
     decodeFrameAck :: Settings -> FrameType -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFrameAck s f@(ACK{}) bs = case BG.runGetOrFail get bs of
+    decodeFrameAck s f@(ACK{}) bs = case BG.runGetOrFail (get f) bs of
                           Right (bs, _, frame)  -> Right (frame, bs)
                           Left _        -> Left Error.InvalidAckData
       where
-        get :: BG.Get Frame
-        get =  undefined
-        header = undefined
-        ackBlock :: BG.Get F.AckBlock
-        ackBlock = undefined
-        timeStamp :: BG.Get F.AckTimeStamp
-        timeStamp = undefined
+        get :: FrameType -> BG.Get Frame
+        get frame@(ACK f a len)=  do
+          acked' <- acked a
+          delay <- BG.getInt16
+          block <- ackBlock f len
+          s     <- BG.getInt8
+          dlargest <- lack
+          t <- timeSinceLargestAcked 
+          stamp <- timeStamp s
+
+          return $ Ack frame acked' delay block 0 dlargest t (Just stamp)
+
+        acked :: Int -> BG.Get Int
+        acked n = undefined
+
+        ackBlock :: Bool -> Int -> BG.Get [F.AckBlock]
+        ackBlock b n 
+          | b == False = g n
+          | otherwise =  do
+                l <- BG.getInt8
+                head' <- g n
+                rest' <- f l
+                return  $ head' ++ rest'
+                
+            where
+              g :: Int -> BG.Get [F.AckBlock]
+              g len = do 
+                n <- BG.getIntN len
+                return $ [F.AckBlock Nothing n]
+
+              f :: Int -> BG.Get [F.AckBlock]
+              f 0 =  return []
+              f n =  (:) <$> f' n <*>  f (n -1)
+
+              f' :: Int -> BG.Get F.AckBlock
+              f' len = do
+                gap <- BG.getInt8
+                ackLen <- BG.getIntN len
+                return $ F.AckBlock (Just gap) ackLen 
+
+
+        lack :: BG.Get (Maybe Int)
+        lack = undefined
+
+        timeSinceLargestAcked  :: BG.Get (Maybe Int)
+        timeSinceLargestAcked = undefined
+
+        timeStamp :: Int ->  BG.Get [F.AckTimeStamp]
+        timeStamp 0 = return []
+        timeStamp n = undefined
     decodeFrameAck _ _ _ = Left Error.InvalidAckData
 
                           
