@@ -143,13 +143,6 @@ decodeFrame s bytes  = case (word82FrameType b) of
         get :: BG.Get Frame
         get = Blocked <$> BG.getInt32
 
-    decodeFrameCongestionFeedBack :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFrameCongestionFeedBack s bs = case BG.runGetOrFail get bs of
-                                        Right (bs, _, frame) -> Right (frame, bs)
-                                        Left _ -> Left Error.InvalidConnectionCloseData
-      where 
-        get = undefined
-
     decodeFramePadding :: Settings -> ByteString -> QUICResult (Frame, ByteString)
     decodeFramePadding s bs =  Right (Padding, BSL.empty)
 
