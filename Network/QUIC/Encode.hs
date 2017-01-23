@@ -10,7 +10,7 @@ import           Network.QUIC.Error   (QUICResult (..))
 import qualified Network.QUIC.Error   as Error
 import Network.QUIC.Frame   (Frame(..), FrameType(..))
 import qualified Network.QUIC.Frame   as Frame
-import Network.QUIC.Header  (CommonHeader (..), Header (..))
+import Network.QUIC.Header  (Header (..))
 import Network.QUIC.Types   (Settings(..))
 
 encodeHeader :: Settings ->  Header -> ByteString
@@ -60,5 +60,3 @@ encodeFrame s frame = case frame of
     encodeFramePing :: Settings -> Frame -> QUICResult ByteString
     encodeFramePing = undefined
 
-encodeCommonHeader :: Settings -> CommonHeader -> QUICResult ByteString
-encodeCommonHeader = undefined

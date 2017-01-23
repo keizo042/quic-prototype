@@ -15,17 +15,30 @@ import qualified Network.QUIC.Error   as Error
 import qualified Network.QUIC.Frame as F
 import           Network.QUIC.Frame   (Frame (..), FrameType (..),
                                        word82FrameType)
-import           Network.QUIC.Header  (CommonHeader (..), Flags (..),
+import           Network.QUIC.Header  (Flags (..),
                                        Header (..))
 import           Network.QUIC.Types   (Nonce, Settings (..))
 
 import qualified Network.QUIC.Internal as BG 
 
 decodeHeader :: Settings -> ByteString -> QUICResult (Header, ByteString)
-decodeHeader s b = undefined
+decodeHeader s bs = case BG.runGetOrFail get bs of
+                         Right (bs, _, h) -> Right (h, bs)
+                         Left _ -> undefined
+  where
+    get :: BG.Get Header
+    get = Header <$> flag <*> conn <*> ver <*> (fromIntegral <$> BG.getIntN 32) <*> num
+      where
+        flag :: BG.Get Flags
+        flag = undefined
+        conn :: BG.Get (Maybe Int64)
+        conn = undefined
+        ver :: BG.Get (Maybe Int32)
+        ver = undefined
+        num :: BG.Get Integer
+        num = undefined
 
-decodeCommonHeader :: Settings -> ByteString -> QUICResult (CommonHeader, ByteString)
-decodeCommonHeader s bs = undefined
+
 
 decodeFrame :: Settings -> ByteString -> QUICResult (Frame, ByteString)
 decodeFrame s bytes  = case (word82FrameType b) of
