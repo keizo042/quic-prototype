@@ -1,5 +1,6 @@
 module Network.QUIC.Internal (
-    getInt8
+    getIntN
+  , getInt8
   , getInt16
   , getInt24
   , getInt32
@@ -12,6 +13,15 @@ import Data.Bits
 import Data.Binary
 import qualified Data.Binary.Get as Get
 
+getIntN :: Int -> Get Int
+getIntN 8 = getInt8
+getIntN 16 = getInt16
+getIntN 24 = getInt24
+getIntN 32 = getInt32
+getIntN 48 = getInt48
+getIntN 56 = getInt56
+getIntN 64 = getInt64
+getIntN _  = error "unsupport number"
 
 getInt8 :: Get Int
 getInt8 = getIntNbyte 1
