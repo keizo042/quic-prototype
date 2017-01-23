@@ -50,38 +50,14 @@ decodeFrame s bytes  = case (word82FrameType b) of
       where
         get :: FrameType -> BG.Get Frame
         get frame@(STREAM fin dlen off stream) = do
-          (s,o) <- header off stream
-          d' <- dataBody dlen
-          return $ Stream frame s o d'
+          Stream frame <$> (sid stream) <*> (BG.getIntN off) <*> (body dlen)
+        sid ::  Int -> BG.Get Int
+        sid 0 =  return 0
+        sid n = BG.getIntN n
 
-        header :: Int -> Int -> BG.Get (Int, Int)
-        header offset streamId = do 
-          s <- streamId' streamId
-          o <- offset' offset
-          return $ (s,o)
-              where
-                streamId' :: Int -> BG.Get Int
-                streamId' s = case s of
-                    8 ->  BG.getInt8
-                    16 -> BG.getInt16
-                    32 -> BG.getInt32
-                    64 -> BG.getInt64
-
-                offset' :: Int -> BG.Get Int
-                offset' o = case o of
-                    0 ->  return 0
-                    8 ->  BG.getInt8
-                    16 -> BG.getInt16
-                    24 -> BG.getInt24
-                    32 -> BG.getInt32
-                    48 -> BG.getInt48
-                    56 -> BG.getInt56
-                    64 -> BG.getInt64
-
-
-        dataBody :: Bool -> BG.Get BSL.ByteString
-        dataBody False  = BG.getRemainingLazyByteString
-        dataBody True = fromIntegral <$> BG.getInt16 >>= BG.getLazyByteString 
+        body :: Bool -> BG.Get BSL.ByteString
+        body False  = BG.getRemainingLazyByteString
+        body True = fromIntegral <$> BG.getInt16 >>= BG.getLazyByteString 
 
     decodeFrameStream _ _ _ = Left Error.InvalidFrameData
 
