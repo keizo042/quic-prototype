@@ -3,9 +3,7 @@ module Network.QUIC.Decode
     decodeHeader
   , decodeFrame
   ) where
-import qualified Data.Binary          as B
-import qualified Data.Binary.Get      as BG
-import qualified Data.Binary.Put      as BP
+import qualified Data.Binary.Get as BG (getLazyByteString, getRemainingLazyByteString,runGetOrFail, Get)
 import           Data.ByteString.Lazy (ByteString (..))
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.ByteString.Lazy.Char8 as BSC8
@@ -20,6 +18,8 @@ import           Network.QUIC.Frame   (Frame (..), FrameType (..),
 import           Network.QUIC.Header  (CommonHeader (..), Flags (..),
                                        Header (..))
 import           Network.QUIC.Types   (Nonce, Settings (..))
+
+import qualified Network.QUIC.Internal as BG 
 
 decodeHeader :: Settings -> ByteString -> QUICResult (Header, ByteString)
 decodeHeader s b = undefined
@@ -44,24 +44,51 @@ decodeFrame s bytes  = case (word82FrameType b) of
     (b,bs) = (BSL.head bytes, BSL.tail bytes)
 
     decodeFrameStream :: Settings -> FrameType -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFrameStream s f bs = case BG.runGetOrFail (get f) bs of
+    decodeFrameStream s f@(STREAM{}) bs = case BG.runGetOrFail (get f) bs of
                                                                  Right (bs, _, frame) -> Right (frame, bs)
-                                                                 Left (bs, _, _) -> Left Error.InvalidFrameData
+                                                                 Left _ -> Left Error.InvalidFrameData
       where
         get :: FrameType -> BG.Get Frame
-        get frame = do
-          h <- header
-          d' <- d
-          return $ h{ streamStreamData = d', streamFrameType = frame}
-        header :: BG.Get Frame
-        header = undefined
-        d :: BG.Get ByteString
-        d = undefined
+        get frame@(STREAM fin dlen off stream) = do
+          (s,o) <- header off stream
+          d' <- dataBody dlen
+          return $ Stream frame s o d'
+
+        header :: Int -> Int -> BG.Get (Int, Int)
+        header offset streamId = do 
+          s <- streamId' streamId
+          o <- offset' offset
+          return $ (s,o)
+              where
+                streamId' :: Int -> BG.Get Int
+                streamId' s = case s of
+                    8 ->  BG.getInt8
+                    16 -> BG.getInt16
+                    32 -> BG.getInt32
+                    64 -> BG.getInt64
+
+                offset' :: Int -> BG.Get Int
+                offset' o = case o of
+                    0 ->  return 0
+                    8 ->  BG.getInt8
+                    16 -> BG.getInt16
+                    24 -> BG.getInt24
+                    32 -> BG.getInt32
+                    48 -> BG.getInt48
+                    56 -> BG.getInt56
+                    64 -> BG.getInt64
+
+
+        dataBody :: Bool -> BG.Get BSL.ByteString
+        dataBody False  = BG.getRemainingLazyByteString
+        dataBody True = fromIntegral <$> BG.getInt16 >>= BG.getLazyByteString 
+
+    decodeFrameStream _ _ _ = Left Error.InvalidFrameData
 
     decodeFrameAck :: Settings -> FrameType -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFrameAck s frame bs = case BG.runGetOrFail get bs of
+    decodeFrameAck s f@(ACK{}) bs = case BG.runGetOrFail get bs of
                           Right (bs, _, frame)  -> Right (frame, bs)
-                          Left (_ ,_, _)        -> Left Error.InvalidAckData
+                          Left _        -> Left Error.InvalidAckData
       where
         get :: BG.Get Frame
         get =  undefined
@@ -70,6 +97,7 @@ decodeFrame s bytes  = case (word82FrameType b) of
         ackBlock = undefined
         timeStamp :: BG.Get F.AckTimeStamp
         timeStamp = undefined
+    decodeFrameAck _ _ _ = Left Error.InvalidAckData
 
                           
 
