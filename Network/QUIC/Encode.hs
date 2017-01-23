@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Network.QUIC.Encode
   (
     encodeHeader
@@ -37,7 +38,7 @@ encodeFrame s frame = case frame of
     encodeFrameAck = undefined
 
     encodeFramePadding :: Settings -> Frame -> QUICResult ByteString
-    encodeFramePadding = undefined
+    encodeFramePadding s frame = 
 
     encodeFrameRstStream :: Settings -> Frame -> QUICResult ByteString
     encodeFrameRstStream = undefined
@@ -58,5 +59,5 @@ encodeFrame s frame = case frame of
     encodeFrameStopWaiting = undefined
 
     encodeFramePing :: Settings -> Frame -> QUICResult ByteString
-    encodeFramePing = undefined
+    encodeFramePing = Right ""
 

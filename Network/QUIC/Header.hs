@@ -30,3 +30,5 @@ data Flags = Flags {
 flags2word8 :: Flags -> Word8
 flags2word8 f =  undefined
 
+word82flags :: Word8 -> Flags
+word82flags w = undefined

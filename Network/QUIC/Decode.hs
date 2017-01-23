@@ -15,6 +15,7 @@ import qualified Network.QUIC.Error   as Error
 import qualified Network.QUIC.Frame as F
 import           Network.QUIC.Frame   (Frame (..), FrameType (..),
                                        word82FrameType)
+import qualified Network.QUIC.Header  as H
 import           Network.QUIC.Header  (Flags (..),
                                        Header (..))
 import           Network.QUIC.Types   (Nonce, Settings (..))
@@ -30,7 +31,7 @@ decodeHeader s bs = case BG.runGetOrFail get bs of
     get = Header <$> flag <*> conn <*> ver <*> (fromIntegral <$> BG.getIntN 32) <*> num
       where
         flag :: BG.Get Flags
-        flag = undefined
+        flag = H.word82flags <$> BG.getInt8 
         conn :: BG.Get (Maybe Int64)
         conn = undefined
         ver :: BG.Get (Maybe Int32)
