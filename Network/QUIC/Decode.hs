@@ -163,7 +163,13 @@ decodeFrame s bytes  = case (word82FrameType b) of
                                              Left _ -> Left Error.InvalidConnectionCloseData
       where
         get :: BG.Get Frame
-        get = undefined
+        get = ConnectionClose <$> err <*> reason
+          where
+            err :: BG.Get Error.ErrorCodes
+            err = Error.int2err <$> BG.getInt32
+            reason :: BG.Get ByteString
+            reason = fromIntegral <$> BG.getInt16 >>= BG.getLazyByteString
+
 
     decodeFrameGoaway :: Settings -> ByteString -> QUICResult (Frame, ByteString)
     decodeFrameGoaway s bs =  case BG.runGetOrFail get bs of
@@ -171,5 +177,10 @@ decodeFrame s bytes  = case (word82FrameType b) of
                               Left _ -> Left Error.InvalidGoAwayData
       where 
         get :: BG.Get Frame
-        get = undefined
+        get = Goaway <$> err <*> BG.getInt32 <*> reason
+          where
+            err :: BG.Get Error.ErrorCodes
+            err = Error.int2err <$> BG.getInt32
+            reason :: BG.Get ByteString
+            reason = fromIntegral <$> BG.getInt16 >>= BG.getLazyByteString
 
