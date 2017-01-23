@@ -12,6 +12,7 @@ module Network.QUIC.Types
 data Settings = Settings { idleTimeout :: Int
                          , mtuSize :: Int
                          , mspc :: Int
+                         , packetNumberSize :: Int
     } deriving Show
 
 type Nonce = Int

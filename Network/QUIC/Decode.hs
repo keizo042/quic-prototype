@@ -122,14 +122,13 @@ decodeFrame s bytes  = case (word82FrameType b) of
 
               f :: Int -> BG.Get [F.AckBlock]
               f 0 =  return []
-              f n =  (:) <$> f' n <*>  f (n -1)
+              f n =  do
+                e0 <- f' n
+                e1 <- f (n -1)
+                return (e0:e1)
 
               f' :: Int -> BG.Get F.AckBlock
-              f' len = do
-                gap <- BG.getInt8
-                ackLen <- BG.getIntN len
-                return $ F.AckBlock (Just gap) ackLen 
-
+              f' len = F.AckBlock <$> (Just <$> BG.getInt8) <*> (BG.getIntN len)
 
         lack :: BG.Get (Maybe Int)
         lack = undefined
@@ -145,12 +144,12 @@ decodeFrame s bytes  = case (word82FrameType b) of
                           
 
     decodeFrameStopWaiting :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-    decodeFrameStopWaiting s bs =  case BG.runGetOrFail get bs of
+    decodeFrameStopWaiting s bs =  case BG.runGetOrFail (get $ packetNumberSize s) bs of
                                    Right (bs, _, frame) -> Right (frame, bs)
                                    Left _               -> Left Error.InvalidStopWaitingData
       where
-        get :: BG.Get Frame 
-        get = undefined
+        get :: Int -> BG.Get Frame 
+        get n = StopWaiting <$> (BG.getIntN n)
 
     decodeFrameWindowUpdate :: Settings -> ByteString -> QUICResult (Frame, ByteString)
     decodeFrameWindowUpdate s bs = case BG.runGetOrFail get bs of
@@ -158,7 +157,7 @@ decodeFrame s bytes  = case (word82FrameType b) of
                                    Left _               -> Left Error.InvalidWindowUpdateData
       where
         get :: BG.Get Frame 
-        get = undefined
+        get  = WindowUpdate <$> BG.getInt32 <*> BG.getInt64
 
     decodeFrameBlocked :: Settings -> ByteString -> QUICResult (Frame, ByteString)
     decodeFrameBlocked s bs = case BG.runGetOrFail get bs of
@@ -166,7 +165,7 @@ decodeFrame s bytes  = case (word82FrameType b) of
                                    Left _               -> Left Error.InvalidFrameData
       where
         get :: BG.Get Frame
-        get = undefined
+        get = Blocked <$> BG.getInt32
 
     decodeFrameCongestionFeedBack :: Settings -> ByteString -> QUICResult (Frame, ByteString)
     decodeFrameCongestionFeedBack s bs = case BG.runGetOrFail get bs of
@@ -184,7 +183,7 @@ decodeFrame s bytes  = case (word82FrameType b) of
                                       Left _    -> Left Error.InvalidRstStreamData
       where
         get :: BG.Get Frame
-        get = undefined
+        get = RstStream <$> BG.getInt32 <*> BG.getInt64 <*> (Error.int2err <$> BG.getInt32)
 
     decodeFramePing :: Settings -> ByteString -> QUICResult (Frame, ByteString)
     decodeFramePing s bs = Right (Ping, BSL.empty)
