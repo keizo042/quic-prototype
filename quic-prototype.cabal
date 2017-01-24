@@ -23,6 +23,7 @@ library
                        Network.QUIC.Frame
                        Network.QUIC.Header
                        Network.QUIC.Error
+                       Network.QUIC.Stream
 
   other-modules:       Network.QUIC.Internal
                        Network.QUIC.Internal.FEC

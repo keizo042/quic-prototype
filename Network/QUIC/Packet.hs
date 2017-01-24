@@ -5,12 +5,12 @@ import Data.Word
 
 data Table
 
-data Packet  = VersionNegotiation {  versionNegotiationFlag  :: Header.Flags
-                                  ,  versionNegotiationVersion :: [Word32]
+data Packet  = VersionNegotiation {  versionNegotiationFlag  :: Header.Header
+                                  ,  versionNegotiationVersion :: [Int]
 
-             | PublicReset { publicResetFlags :: Header.Flags
-                           , publicResetConnectionId :: Word64
+             | PublicReset { publicResetFlags :: Header.Header
+                           , publicResetConnectionId :: Int
                            , publicResetMap :: Table }
-             | Regular { regularHeader :: Header.CommonHeader 
+             | Regular { regularHeader :: Header.Header 
                        , regularFrame :: Frame.Frame
                        }

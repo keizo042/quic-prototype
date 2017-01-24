@@ -19,23 +19,39 @@ import qualified Network.QUIC.Header  as H
 import           Network.QUIC.Header  (Flags (..),
                                        Header (..))
 import           Network.QUIC.Types   (Nonce, Settings (..))
-
+import qualified Network.QUIC.Stream as S
 import qualified Network.QUIC.Internal as BG 
 
 decodeHeader :: Settings -> ByteString -> QUICResult (Header, ByteString)
-decodeHeader s bs = case BG.runGetOrFail get bs of
+decodeHeader s bs = case BG.runGetOrFail (get s) bs of
                          Right (bs, _, h) -> Right (h, bs)
                          Left _ -> undefined
   where
-    get :: BG.Get Header
-    get = Header <$> flag <*> conn <*> ver <*> (fromIntegral <$> BG.getIntN 32) <*> num
+    get :: Settings -> BG.Get Header
+    get s = flag >>= (check s)
       where
+        check :: Settings -> Flags -> BG.Get Header
+        check s f@(Flags v nonce reset cid n path)
+          | reset == True = decodePublicReset s
+          | (v == True && (S.isClient $ endpoint s)) =  decodeVersionNegotiation
+          | otherwise = decodePublicReset s 
+        decodePublicReset ::  Settings -> BG.Get Header
+        decodePublicReset  = undefined
+
+        decodeVersionNegotiation :: BG.Get Header
+        decodeVersionNegotiation = undefined
+
+        decodeRegular :: Settings -> Flags -> BG.Get Header
+        decodeRegular s f = RegularHeader f <$> (conn $ flagsConnectionId f) <*> (ver $ flagsVersion f ) <*> (fromIntegral <$> BG.getIntN 32) <*> num
+
         flag :: BG.Get Flags
         flag = H.word82flags <$> fromIntegral <$> BG.getInt8
-        conn :: BG.Get (Maybe Int64)
-        conn = undefined
-        ver :: BG.Get (Maybe Int32)
-        ver = undefined
+        conn :: Bool -> BG.Get (Maybe Int64)
+        conn True = BG.getInt64 >>=  return . Just . fromIntegral 
+        conn False = return Nothing
+        ver :: Bool -> BG.Get (Maybe Int32)
+        ver True = BG.getInt32 >>= return . Just . fromIntegral
+        ver False =  return Nothing
         num :: BG.Get Integer
         num = undefined
 

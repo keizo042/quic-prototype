@@ -9,14 +9,17 @@ module Network.QUIC.Header
 import           Data.Int
 import Data.Bits
 import Data.Word 
+import Network.QUIC.Types 
 
-data Header = Header { 
-   headerFlags                :: Flags
-  ,headerConnectionId         :: Maybe Int64
-  ,headerQuicVersion          :: Maybe Int32
-  ,headerDiversificationNonce :: Integer
-  ,headerPacketNumber         :: Integer
-  } deriving Show
+data Header = RegularHeader { 
+             regularHeaderFlags                :: Flags
+            ,regularHeaderConnectionId         :: Maybe Int64
+            ,regularHeaderQuicVersion          :: Maybe Int32
+            ,regularHeaderDiversificationNonce :: Integer
+            ,ergularHeaderPacketNumber         :: Integer
+            } 
+            | PublicResetHeader   { publicResetFlags :: Flags }
+            | VersionNegotiation  { versionNegotiationFlags :: Flags }
 
 
 data Flags = Flags {
