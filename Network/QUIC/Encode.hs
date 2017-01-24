@@ -6,6 +6,7 @@ module Network.QUIC.Encode
   ) where
 
 import Data.ByteString      (ByteString (..))
+import qualified Data.ByteString      as BS
 import qualified Data.ByteString.Lazy as BSL
 import           Network.QUIC.Error   (QUICResult (..))
 import qualified Network.QUIC.Error   as Error
@@ -38,7 +39,7 @@ encodeFrame s frame = case frame of
     encodeFrameAck = undefined
 
     encodeFramePadding :: Settings -> Frame -> QUICResult ByteString
-    encodeFramePadding s frame = 
+    encodeFramePadding s frame =  undefined
 
     encodeFrameRstStream :: Settings -> Frame -> QUICResult ByteString
     encodeFrameRstStream = undefined
@@ -59,5 +60,5 @@ encodeFrame s frame = case frame of
     encodeFrameStopWaiting = undefined
 
     encodeFramePing :: Settings -> Frame -> QUICResult ByteString
-    encodeFramePing = Right ""
+    encodeFramePing s frame = Right BS.empty
 

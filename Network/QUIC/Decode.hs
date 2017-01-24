@@ -31,7 +31,7 @@ decodeHeader s bs = case BG.runGetOrFail get bs of
     get = Header <$> flag <*> conn <*> ver <*> (fromIntegral <$> BG.getIntN 32) <*> num
       where
         flag :: BG.Get Flags
-        flag = H.word82flags <$> BG.getInt8 
+        flag = H.word82flags <$> fromIntegral <$> BG.getInt8
         conn :: BG.Get (Maybe Int64)
         conn = undefined
         ver :: BG.Get (Maybe Int32)
