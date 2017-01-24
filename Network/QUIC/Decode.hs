@@ -63,8 +63,8 @@ decodeFrame s bytes  = case (word82FrameType b) of
                                                                  Left _ -> Left Error.InvalidFrameData
       where
         get :: FrameType -> BG.Get Frame
-        get frame@(STREAM fin dlen off stream) = do
-          Stream frame <$> (sid stream) <*> (BG.getIntN off) <*> (body dlen)
+        get frame@(STREAM fin dlen off stream) = Stream frame <$> (sid stream) <*> (BG.getIntN off) <*> (body dlen)
+
         sid ::  Int -> BG.Get Int
         sid 0 =  return 0
         sid n = BG.getIntN n
@@ -102,9 +102,7 @@ decodeFrame s bytes  = case (word82FrameType b) of
                 
             where
               g :: Int -> BG.Get [F.AckBlock]
-              g len = do 
-                n <- BG.getIntN len
-                return $ [F.AckBlock Nothing n]
+              g len = BG.getIntN len >>= ( \n -> return [F.AckBlock Nothing n])
 
               f :: Int -> BG.Get [F.AckBlock]
               f 0 =  return []
