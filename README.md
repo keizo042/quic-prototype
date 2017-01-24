@@ -2,7 +2,7 @@ quic-prototype
 ====
 
 ## Descriotion
-Quick UDP internet protocol connections early implementation.  
+Quick UDP internet protocol connections early experimental implementation.  
 in the future. it will be depricate and I develop next quic library based Standard RFC.  
 I mainly support QUIC VERSION 34 or later. If I feel like, maybe 30-33 also. abusolutely NO 30 or before .  
 
