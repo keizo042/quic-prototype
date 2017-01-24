@@ -94,7 +94,7 @@ data Frame = Stream  { streamFrameType :: FrameType
                   , ackNumTimeStamps     :: Int
                   , ackDeltaLargestAcked :: Maybe Int
                   , ackTimeLargestAcked     :: Maybe Int
-                  , ackTimeStamps        :: Maybe [AckTimeStamp]
+                  , ackTimeStamps        :: [AckTimeStamp]
                   }
            | StopWaiting  { sstopWaitingLeastUnackedDelta :: Int }
            | WindowUpdate { windowUpdateStreamId   :: Int

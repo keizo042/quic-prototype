@@ -90,7 +90,7 @@ decodeFrame s bytes  = case (word82FrameType b) of
           t <- timeSinceLargestAcked 
           stamp <- timeStamp s
 
-          return $ Ack frame acked' delay block 0 dlargest t (Just stamp)
+          return $ Ack frame acked' delay block 0 dlargest t stamp
 
         acked :: Int -> BG.Get Int
         acked n = undefined
@@ -128,7 +128,12 @@ decodeFrame s bytes  = case (word82FrameType b) of
 
         timeStamp :: Int ->  BG.Get [F.AckTimeStamp]
         timeStamp 0 = return []
-        timeStamp n = undefined
+        timeStamp n = do
+          i <- f 
+          e0 <- timeStamp (n -1)
+          return (i:e0)
+          where
+            f = undefined
     decodeFrameAck _ _ _ = Left Error.InvalidAckData
 
                           
