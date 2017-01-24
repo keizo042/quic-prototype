@@ -86,7 +86,7 @@ decodeFrame s bytes  = case (word82FrameType b) of
           delay <- BG.getInt16
           block <- ackBlock f len
           s     <- BG.getInt8
-          Ack frame acked' delay block 0 <$> lack <*> timeSinceLargestAcked <*> (timeStamp s)
+          Ack frame acked' delay block <$> lack <*> timeSinceLargestAcked <*> (timeStamp s)
 
         acked :: Int -> BG.Get Int
         acked n = undefined

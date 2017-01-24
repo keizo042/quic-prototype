@@ -91,7 +91,6 @@ data Frame = Stream  { streamFrameType :: FrameType
                   , ackLargestAcked         :: Int
                   , ackDelay             :: Int
                   , ackBlock             :: [AckBlock]
-                  , ackNumTimeStamps     :: Int
                   , ackDeltaLargestAcked :: Maybe Int
                   , ackTimeLargestAcked     :: Maybe Int
                   , ackTimeStamps        :: [AckTimeStamp]
