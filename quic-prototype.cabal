@@ -27,6 +27,7 @@ library
 
   other-modules:       Network.QUIC.Internal
                        Network.QUIC.Internal.FEC
+                       Network.QUIC.Internal.Crypto
   
   build-depends:        base >= 4.7 && < 5
                       , bytestring
