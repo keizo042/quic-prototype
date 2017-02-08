@@ -1,9 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Network.QUIC.Encode
-  (
-    encodeHeader
-  , encodeFrame
-  ) where
+module Network.QUIC.Encode where
 
 import Data.ByteString      (ByteString (..))
 import qualified Data.ByteString      as BS
@@ -17,48 +13,4 @@ import Network.QUIC.Types   (Settings(..))
 
 encodeHeader :: Settings ->  Header -> ByteString
 encodeHeader = undefined
-
-encodeFrame :: Settings -> Frame -> QUICResult ByteString
-encodeFrame s frame = case frame of
-                           Stream{}                 -> encodeFrameStream s frame
-                           Ack{}                    -> encodeFrameAck s frame
-                           RstStream{}              -> encodeFrameRstStream s frame
-                           WindowUpdate{}           -> encodeFrameWindowUpdate s frame
-                           Blocked{}                -> encodeFrameBlocked s frame
-                           Padding                  -> encodeFramePadding  s  frame
-                           Ping                     -> encodeFramePing s  frame
-                           ConnectionClose{}    -> encodeFrameConnectionClose s frame
-                           Goaway{}           -> encodeFrameGoAway  s  frame
-                           StopWaiting{}          -> encodeFrameStopWaiting s frame
-                           FrameError e -> Left e
-  where
-    encodeFrameStream :: Settings -> Frame -> QUICResult ByteString
-    encodeFrameStream = undefined
-
-    encodeFrameAck :: Settings -> Frame -> QUICResult ByteString
-    encodeFrameAck = undefined
-
-    encodeFramePadding :: Settings -> Frame -> QUICResult ByteString
-    encodeFramePadding s frame =  undefined
-
-    encodeFrameRstStream :: Settings -> Frame -> QUICResult ByteString
-    encodeFrameRstStream = undefined
-
-    encodeFrameConnectionClose :: Settings -> Frame -> QUICResult ByteString
-    encodeFrameConnectionClose = undefined
-
-    encodeFrameGoAway :: Settings -> Frame -> QUICResult ByteString
-    encodeFrameGoAway = undefined
-
-    encodeFrameWindowUpdate :: Settings -> Frame -> QUICResult ByteString
-    encodeFrameWindowUpdate = undefined
-
-    encodeFrameBlocked :: Settings -> Frame -> QUICResult ByteString
-    encodeFrameBlocked = undefined
-
-    encodeFrameStopWaiting :: Settings -> Frame -> QUICResult ByteString
-    encodeFrameStopWaiting = undefined
-
-    encodeFramePing :: Settings -> Frame -> QUICResult ByteString
-    encodeFramePing s frame = Right BS.empty
 
