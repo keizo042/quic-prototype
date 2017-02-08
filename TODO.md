@@ -1,4 +1,4 @@
-TOD.md
+TODO.md
 ======
 
 * upload Hackage

@@ -1,16 +1,15 @@
 module Network.QUIC.Packet where
-import qualified Network.QUIC.Header as Header
-import qualified Network.QUIC.Frame as Frame
+import qualified Network.QUIC.Header as H
+import Network.QUIC.Frame
+import Network.QUIC.Types
 import Data.Word
 
-data Table
 
-data Packet  = VersionNegotiation {  versionNegotiationFlag  :: Header.Header
-                                  ,  versionNegotiationVersion :: [Int]
-
-             | PublicReset { publicResetFlags :: Header.Header
-                           , publicResetConnectionId :: Int
+data Packet  = VersionNegotiation {  versionNegotiationFlag  :: H.Header
+                                  ,  versionNegotiationVersion :: [Int] }
+             | PublicReset { publicResetFlags :: H.Header
+                           , publicResetConnectionID :: ConnectionID
                            , publicResetMap :: Table }
-             | Regular { regularHeader :: Header.Header 
-                       , regularFrame :: Frame.Frame
-                       }
+             | Regular { regularHeader :: H.Header 
+                       , regularPayload :: Payload }
+              deriving Show

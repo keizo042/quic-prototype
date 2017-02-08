@@ -33,5 +33,6 @@ twitter : @keizo042
 mail: keizo.bookman at gmail.com  
 
 ## CONTRIBUTE
-see CONTRIBUTE.md.
-follow github flow development.
+
+see CONTRIBUTE.md.  
+follow github flow development.  

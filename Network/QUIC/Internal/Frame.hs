@@ -1,0 +1,21 @@
+module Network.QUIC.Internal.Frame 
+  (
+  )where
+
+import Data.Word
+import Data.Bits
+
+frameType :: Word8 -> Int
+frameType b 
+  | b .&. 0x80 == 0x80 = 1
+  | b .&. 0x40 == 0x40 = 2
+  | b .&. 0x01 == 0x01 = 3
+  | b .&. 0x02 == 0x02 = 4
+  | b .&. 0x03 == 0x03 = 5
+  | b .&. 0x04 == 0x04 = 6
+  | b .&. 0x05 == 0x05 = 6
+  | b .&. 0x06 == 0x06 = 6
+  | b .&. 0x07 == 0x07 = 6
+  | b .&. 0x08 == 0x08 = 6
+  | b .&. 0x09 == 0x09 = 6
+
