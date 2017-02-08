@@ -6,5 +6,7 @@ import Data.Binary.Put
 
 data PaddingFrame = PaddingFrame
 
-decodeFramePing :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-decodeFramePing s bs = Right (Ping, BSL.empty)
+decodeFramePing :: ByteString -> QUICResult (PaddingFrame, ByteString)
+decodeFramePing bs = Right (Ping, BSL.empty)
+
+encodeFramePing :: PaddingFrame -> ByteString

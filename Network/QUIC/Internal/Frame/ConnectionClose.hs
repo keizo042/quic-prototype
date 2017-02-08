@@ -8,12 +8,12 @@ data ConnectionCloseFrame =  ConnectionCloseFrame  { conClosedErrorCode :: Error
                                                    , conClosedreasonPahse         :: ByteString
                                                    } deriving Show
 
-decodeConnectionCloseFrame = undefined
 
+encodeConnectionCloseFrame :: ConnectionCloseFrame -> ByteString
 encodeConnectionCloseFrame = undefined
 
-decodeFrameConnectionClosed :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-decodeFrameConnectionClosed s bs =  case BG.runGetOrFail get bs of
+decodeConnectionClosedFrame ::  ByteString -> QUICResult (Frame, ByteString)
+decodeConnectionClosedFrame bs =  case BG.runGetOrFail get bs of
                                          Right (bs, _, frame) -> Right (frame, bs)
                                          Left _ -> Left Error.InvalidConnectionCloseData
   where
@@ -24,3 +24,6 @@ decodeFrameConnectionClosed s bs =  case BG.runGetOrFail get bs of
         err = Error.int2err <$> BG.getInt32
         reason :: BG.Get ByteString
         reason = fromIntegral <$> BG.getInt16 >>= BG.getLazyByteString
+
+
+
