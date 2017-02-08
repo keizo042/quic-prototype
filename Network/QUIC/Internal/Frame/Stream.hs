@@ -1,8 +1,11 @@
 module Network.QUIC.Internal.Frame.Stream where
 import Network.QUIC.Error
 import Data.Word
+import Data.Bits
+import Data.ByteString.Lazy
 import Data.Binary.Get
 import Data.Binary.Put
+import Network.QUIC.Internal
 
 data StreamFrame = StreamFrame { streamHasFin :: Bool
                      , streamHasDataField :: Bool
@@ -13,33 +16,31 @@ data StreamFrame = StreamFrame { streamHasFin :: Bool
                      , sStreamData :: ByteString
                      } deriving (Show, Eq)
 
-decoeStreamFrame :: ByteString -> QUICResult (Frame, ByteString)
+decodeStreamFrame :: ByteString -> QUICResult (StreamFrame, ByteString)
 decodeStreamFrame  bs = case runGetOrFail (get f) bs of
                                                              Right (bs, _, frame) -> Right (frame, bs)
-                                                             Left _ -> Left Error.InvalidFrameData
+                                                             Left _ -> Left InvalidFrameData
   where
-    get :: BG.Get StreamFrame
-    get  = getWord8 >>= (\ x -> StreamFrame frame <$> (sid $ streamStreamIdIs x) <*> (BG.getIntN $ streamHasOffset x) <*> (body $ streamHasBody x))
+    get :: Get StreamFrame
+    get  = getWord8 >>= (\ x -> StreamFrame frame <$> (sid $ streamStreamIdIs x) <*> (getIntN $ streamHasOffset x) <*> (body $ streamHasBody x))
 
-    sid ::  Int -> BG.Get Int
+    sid ::  Int -> Get Int
     sid 0 =  return 0
-    sid n = BG.getIntN n
+    sid n = getIntN n
 
-    body :: Bool -> BG.Get BSL.ByteString
-    body False  = BG.getRemainingLazyByteString
-    body True = fromIntegral <$> BG.getInt16 >>= BG.getLazyByteString 
+    body :: Bool -> Get ByteString
+    body False  = getRemainingLazyByteString
+    body True = fromIntegral <$> getInt16 >>= getLazyByteString 
 
 
-streamHasFin :: Word8 -> Bool
-streamHasFin i = i .&. 0x40  == 0x40
+hasStreamFin :: Word8 -> Bool
+hasStreamFin i = i .&. 0x40  == 0x40
 
 streamLengthIs :: Word8 -> bool
 streamLengthIs i = i .&. 0x20  == 0x20
 
 streamOffsetIs :: Word8 -> Int
-streamOffsetIs i = offset
-  where
-          offset = case i .&. 0x1c of
+streamOffsetIs i = case i .&. 0x1c of
                         0x00 -> 0
                         0x04 -> 8
                         0x08 -> 16

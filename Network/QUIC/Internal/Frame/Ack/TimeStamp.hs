@@ -2,6 +2,7 @@ module Network.QUIC.Internal.Frame.Ack.TimeStamp where
 import Network.QUIC.Error
 import Data.Binary.Get
 import Data.Binary.Put
+import Data.ByteString.Lazy
 
 
 data AckTimeStamp = AckTimeStamp { deltaLargestAcked  :: Int

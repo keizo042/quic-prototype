@@ -2,7 +2,9 @@ module Network.QUIC.Internal.Frame.Ack where
 import Data.Binary.Get
 import Data.Binary.Put
 import Data.Word
+import Data.ByteString.Lazy
 import Network.QUIC.Error
+import Network.QUIC.Internal
 import Network.QUIC.Internal.Frame.Ack.Block
 import Network.QUIC.Internal.Frame.Ack.TimeStamp
 
@@ -18,52 +20,52 @@ data AckFrame = AckFrame { ackHasAckBlock :: Bool
                          , ackTimeStamps        :: [AckTimeStamp]
                          } deriving Show
 
-decodeFrameAck ::  ByteString -> QUICResult (Frame, ByteString)
-decodeFrameAck bs = case BG.runGetOrFail (get f) bs of
+decodeAckFrame ::  ByteString -> QUICResult (AckFrame, ByteString)
+decodeAckFrame bs = case runGetOrFail (get f) bs of
                       Right (bs, _, frame)  -> Right (frame, bs)
-                      Left _        -> Left Error.InvalidAckData
+                      Left _        -> Left InvalidAckData
   where
-    get  -> BG.Get Frame
+    get  :: Get AckFrame
     get =  do
       acked' <- acked a
-      delay <- BG.getInt16
+      delay <- getInt16
       block <- ackBlock f len
-      s     <- BG.getInt8
+      s     <- getInt8
       Ack frame acked' delay block <$> lack <*> timeSinceLargestAcked <*> (timeStamp s)
 
-    acked :: Int -> BG.Get Int
+    acked :: Int -> Get Int
     acked n = undefined
 
-    ackBlock :: Bool -> Int -> BG.Get [F.AckBlock]
+    ackBlock :: Bool -> Int -> Get [AckBlock]
     ackBlock b n 
       | b == False = g n
       | otherwise =  do
-            l <- BG.getInt8
+            l <- getInt8
             head' <- g n
             rest' <- f l
             return  $ head' ++ rest'
             
         where
-          g :: Int -> BG.Get [F.AckBlock]
-          g len = BG.getIntN len >>= ( \n -> return [F.AckBlock Nothing n])
+          g :: Int -> Get [AckBlock]
+          g len = getIntN len >>= ( \n -> return [AckBlock Nothing n])
 
-          f :: Int -> BG.Get [F.AckBlock]
+          f :: Int -> Get [AckBlock]
           f 0 =  return []
           f n =  do
             e0 <- f' n
             e1 <- f (n -1)
             return (e0:e1)
 
-          f' :: Int -> BG.Get F.AckBlock
-          f' len = F.AckBlock <$> (Just <$> BG.getInt8) <*> (BG.getIntN len)
+          f' :: Int -> Get AckBlock
+          f' len = AckBlock <$> (Just <$> getInt8) <*> (getIntN len)
 
-    lack :: BG.Get (Maybe Int)
+    lack :: Get (Maybe Int)
     lack = undefined
 
-    timeSinceLargestAcked  :: BG.Get (Maybe Int)
+    timeSinceLargestAcked  :: Get (Maybe Int)
     timeSinceLargestAcked = undefined
 
-    timeStamp :: Int ->  BG.Get [F.AckTimeStamp]
+    timeStamp :: Int ->  Get [AckTimeStamp]
     timeStamp 0 = return []
     timeStamp n = do
       i <- f 
@@ -71,4 +73,4 @@ decodeFrameAck bs = case BG.runGetOrFail (get f) bs of
       return (i:e0)
       where
         f = undefined
-decodeFrameAck _ _ _ = Left Error.InvalidAckData
+decodeFrameAck _ _ _ = Left InvalidAckData
