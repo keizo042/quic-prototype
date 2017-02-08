@@ -1,6 +1,7 @@
-module Network.QUIC.Internal.Frame.Stream where
+module Network.QUIC.Internal.Frame.Ack where
 import Data.Binary.Get
 import Data.Binary.Put
+import Data.Word
 import Network.QUIC.Error
 import Network.QUIC.Internal.Frame.Ack.Block
 import Network.QUIC.Internal.Frame.Ack.TimeStamp

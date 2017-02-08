@@ -1,5 +1,6 @@
 module Network.QUIC.Internal.Frame.Stream where
 import Network.QUIC.Error
+import Data.Word
 import Data.Binary.Get
 import Data.Binary.Put
 

@@ -25,6 +25,11 @@ library
 
   other-modules:       Network.QUIC.Internal
                        Network.QUIC.Internal.FEC
+                       Network.QUIC.Internal.Frame
+                       Network.QUIC.Internal.Frame.Stream
+                       Network.QUIC.Internal.Frame.Ack
+                       Network.QUIC.Internal.Frame.Ack.TimeStamp
+                       Network.QUIC.Internal.Frame.Ack.Block
   
   build-depends:        base >= 4.7 && < 5
                       , bytestring
