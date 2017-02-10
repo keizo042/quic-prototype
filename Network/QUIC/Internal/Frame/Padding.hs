@@ -2,12 +2,13 @@ module Network.QUIC.Internal.Frame.Padding where
 import Network.QUIC.Error
 import Data.Binary.Get
 import Data.Binary.Put
+import Data.ByteString.Lazy
 
 
 data PaddingFrame = PaddingFrame
 
-decodeFramePing :: ByteString -> QUICResult (PaddingFrame, ByteString)
-decodeFramePing bs = Right (Ping, BSL.empty)
+decodeFramePadding :: ByteString -> QUICResult (PaddingFrame, ByteString)
+decodeFramePadding bs = Right (PaddingFrame, empty)
 
-encodeFramePing :: PaddingFrame -> ByteString
-encodeFramePing = undefined
+encodeFramePadding :: PaddingFrame -> ByteString
+encodeFramePadding = undefined
