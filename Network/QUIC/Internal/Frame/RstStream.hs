@@ -1,22 +1,26 @@
 module Network.QUIC.Internal.Frame.RstStream where
-import Network.QUIC.Error
 import Data.Binary.Get
 import Data.Binary.Put
 
+import Data.ByteString.Lazy
 
-data RstStreamFrame = RstStreamFrame  { rstStreamStreamId   :: Int
-                                      , rstStreamByteOffset :: Int
-                                      , rstStreamErrCode    :: ErrorCodes
+import qualified Network.QUIC.Error as E
+import Network.QUIC.Internal.Util.Binary
+
+data RstStreamFrame = RstStreamFrame  { rstStreamStreamID   :: !Int
+                                      , rstStreamByteOffset :: !Int
+                                      , rstStreamErrCode    :: !E.ErrorCodes
                                       } deriving Show
 
 
 encodeFrameRstStream :: RstStreamFrame -> ByteString
 encodeFrameRstStream = undefined
 
-decodeFrameRstStream :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-decodeFrameRstStream s bs =  case BG.runGetOrFail get bs of
+decodeFrameRstStream :: ByteString -> E.QUICResult (RstStreamFrame, ByteString)
+decodeFrameRstStream bs =  case runGetOrFail (get n) bs of
                                   Right (bs, _, frame) -> Right (frame, bs)
-                                  Left _    -> Left Error.InvalidRstStreamData
+                                  Left _    -> Left E.InvalidRstStreamData
   where
-    get :: BG.Get Frame
-    get = RstStream <$> BG.getInt32 <*> BG.getInt64 <*> (Error.int2err <$> BG.getInt32)
+    n = 4
+    get :: Int -> Get RstStreamFrame
+    get n = RstStreamFrame <$> getStreamID n <*> getInt8byte <*> getErrorCode

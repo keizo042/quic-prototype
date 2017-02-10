@@ -32,6 +32,7 @@ library
                        Network.QUIC.Internal.Frame.Ack.Block
                        Network.QUIC.Internal.Frame.Blocked
                        Network.QUIC.Internal.Frame.ConnectionClose
+                       Network.QUIC.Internal.Frame.RstStream
                        Network.QUIC.Internal.Util.Binary
   
   build-depends:        base >= 4.7 && < 5

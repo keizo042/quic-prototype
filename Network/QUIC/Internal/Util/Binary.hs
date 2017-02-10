@@ -7,12 +7,15 @@ module Network.QUIC.Internal.Util.Binary
     , getInt7byte
     , getInt8byte
     , getIntNbyte
+
     , getStreamID
+    , getErrorCode
   )where
 import Data.Int(Int8)
 import Data.Bits
 import Data.Binary
 import qualified Data.Binary.Get as Get
+import qualified Network.QUIC.Error as E
 
 
 getInt1byte :: Get Int
@@ -50,3 +53,6 @@ getIntNbyte n = foldl f 0 <$> list
 
 getStreamID :: Int -> Get Int
 getStreamID n =  getIntNbyte n
+
+getErrorCode :: Get E.ErrorCodes
+getErrorCode = E.int2err <$> getInt4byte

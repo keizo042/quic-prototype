@@ -10,3 +10,4 @@ decodeFramePing :: ByteString -> QUICResult (PaddingFrame, ByteString)
 decodeFramePing bs = Right (Ping, BSL.empty)
 
 encodeFramePing :: PaddingFrame -> ByteString
+encodeFramePing = undefined
