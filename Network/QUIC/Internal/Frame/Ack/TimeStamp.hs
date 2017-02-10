@@ -15,5 +15,3 @@ decodeAckTimeStamp = undefined
 encodeAckTimeStamp :: AckTimeStamp -> ByteString
 encodeAckTimeStamp = undefined
 
-get :: Get AckTimeStamp
-get = undefined
