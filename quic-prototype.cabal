@@ -30,6 +30,8 @@ library
                        Network.QUIC.Internal.Frame.Ack
                        Network.QUIC.Internal.Frame.Ack.TimeStamp
                        Network.QUIC.Internal.Frame.Ack.Block
+                       Network.QUIC.Internal.Frame.Blocked
+                       Network.QUIC.Internal.Frame.ConnectionClose
                        Network.QUIC.Internal.Util.Binary
   
   build-depends:        base >= 4.7 && < 5
