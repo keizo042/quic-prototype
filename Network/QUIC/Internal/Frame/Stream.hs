@@ -14,8 +14,8 @@ import Network.QUIC.Internal.Util.Binary
 data StreamFrame = StreamFrame { streamHasFin :: !Bool
                      , streamHasDataLenField :: !Bool
                      , streamOffset :: !Int
-                     , streamStreamId :: Int
-                     , streamStreamData :: BS.ByteString
+                     , streamStreamId :: !Int
+                     , streamStreamData :: !BS.ByteString
                      } deriving (Show, Eq)
 
 decodeStreamFrame :: BSL.ByteString -> E.QUICResult (StreamFrame, BSL.ByteString)

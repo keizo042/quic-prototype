@@ -1,14 +1,21 @@
 module Network.QUIC.Internal.Frame.Blocked where
-import Network.QUIC.Error
 import Data.Binary.Get
-import Data.Binary.Put
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as BSL
 
-data BlockedFrame = BlockedFrame { blockedStreamId :: Int } deriving Show
+import qualified Network.QUIC.Error as E
+import Network.QUIC.Internal.Util.Binary
 
-decodeFrameBlocked :: Settings -> ByteString -> QUICResult (Frame, ByteString)
-decodeFrameBlocked s bs = case BG.runGetOrFail get bs of
+
+data BlockedFrame = BlockedFrame { blockedStreamID :: Int } deriving Show
+
+decodeBlockedFrame  :: ByteString -> E.QUICResult (BlockedFrame, ByteString)
+decodeBlockedFrame s bs = case runGetOrFail get bs of
                                Right (bs, _, frame) -> Right (frame, bs)
-                               Left _               -> Left Error.InvalidFrameData
+                               Left _               -> Left E.InvalidFrameData
   where
-    get :: BG.Get Frame
-    get = Blocked <$> BG.getInt32
+    get :: BG.Get BlockedFrame
+    get = BlockedFrame <$> getInt4byte
+
+encodeBlockedFrame :: BlockedFrame -> ByteString
+encodeBlockedFrame = undefined
