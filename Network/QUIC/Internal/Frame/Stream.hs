@@ -1,4 +1,9 @@
-module Network.QUIC.Internal.Frame.Stream where
+module Network.QUIC.Internal.Frame.Stream 
+  (
+    StreamFrame(..)
+    , encodeStreamFrame
+    , decodeStreamFrame
+  )where
 import Data.Word
 import Data.Bits
 import Data.ByteString.Lazy(toStrict)
@@ -8,6 +13,7 @@ import Data.Binary.Get
 import Data.Binary.Put
 
 import qualified Network.QUIC.Error as E
+import Network.QUIC.Types
 import Network.QUIC.Internal
 import Network.QUIC.Internal.Util.Binary
 
@@ -87,14 +93,34 @@ word2streamStreamIdSize i = case i .&. 0x03 of
 streamStreamIDSize2word :: Int -> Word8
 streamStreamIDSize2word = undefined
 
+checkStreamIDSize :: StreamID -> Int
+checkStreamIDSize = undefined
+
+checkOffsetLen :: Int -> Int
+checkOffsetLen = undefined
+
+putOffset :: Int -> Put
+putOffset size =  undefined
+
+putData :: BS.ByteString -> Put
+putData = undefined
+
 encodeStreamFrame :: StreamFrame -> BSL.ByteString
-encodeStreamFrame (StreamFrame hasFin hasDataLen offset streamID streamData) = runPut put
+encodeStreamFrame (StreamFrame hasFin hasDataLen offset streamID streamData) = runPut $ put 
+                                                                                  (checkStreamIDSize streamID) 
+                                                                                  (checkOffsetLen offset)
   where
-    offsetSize = undefined
-    streamIDSize = undefined
-    put :: Put 
-    put = do
+    put :: Int -> Int -> Put 
+    put streamIDSize offsetSize = do
       putWord8 flag
+      putStreamID streamIDSize streamID
+      putOffset offsetSize
+      putData streamData
       where
-        flag = 0x80 .|.  (if hasFin then 0x40 else 0x00) .|. (if hasDataLen then 0x20 else 0x00)  .|. (streamOffsetSize2word offsetSize) .|. (streamStreamIDSize2word streamIDSize)
+        flag = 0x80 
+          .|.  (if hasFin then 0x40 else 0x00)
+          .|. (if hasDataLen then 0x20 else 0x00)
+          .|. (streamOffsetSize2word offsetSize) 
+          .|. (streamStreamIDSize2word streamIDSize)
+          .|. 0x00
       
