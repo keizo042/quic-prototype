@@ -3,6 +3,7 @@ import Data.Binary.Get
 import Data.Binary.Put
 import Data.Word
 import Data.Time
+import Data.Bits
 
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.ByteString as BS
@@ -45,4 +46,16 @@ decodeAckFrame bs = case runGetOrFail get bs of
         where
           hasRange :: Word8 -> Bool
           hasRange = undefined
+          ackedLenSize :: Word8 -> Int
           ackedLenSize = undefined
+
+
+encodeAckFrame :: AckFrame -> BSL.ByteString
+encodeAckFrame a = runPut $ put a
+  where
+    put :: AckFrame -> Put
+    put frame = undefined
+
+    flags :: Word8
+    flags = 0x40
+      .|. 0x0
