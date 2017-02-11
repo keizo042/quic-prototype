@@ -21,4 +21,4 @@ getAckBlock :: Get AckBlock
 getAckBlock = undefined
 
 putAckBlock :: AckBlock -> Put
-putAckBlock = undefined
+putAckBlock (AckBlock gap len)= undefined
