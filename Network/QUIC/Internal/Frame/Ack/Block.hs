@@ -1,13 +1,24 @@
-module Network.QUIC.Internal.Frame.Ack.Block where
+module Network.QUIC.Internal.Frame.Ack.Block 
+  (
+    AckBlock(..)
+    , getAckBlock
+    , putAckBlock
+  )where
 import qualified Network.QUIC.Error as E
 
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
+
+import Data.Binary.Get
+import Data.Binary.Put
 
 
 data AckBlock = AckBlock { ackBlockGap :: Maybe Int
                          , ackBlockLength      :: Int
                          } deriving Show
 
-decodeAckBlock :: BSL.ByteString -> E.QUICResult (AckBlock, BSL.ByteString)
-decodeAckBlock = undefined
+getAckBlock :: Get AckBlock
+getAckBlock = undefined
+
+putAckBlock :: AckBlock -> Put
+putAckBlock = undefined
