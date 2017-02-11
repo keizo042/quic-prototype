@@ -19,6 +19,7 @@ library
   exposed-modules:     Network.QUIC
                        Network.QUIC.Decode
                        Network.QUIC.Encode
+                       Network.QUIC.Types
                        Network.QUIC.Frame
                        Network.QUIC.Header
                        Network.QUIC.Error
@@ -36,6 +37,8 @@ library
                        Network.QUIC.Internal.Frame.Padding
                        Network.QUIC.Internal.Frame.StopWaiting
                        Network.QUIC.Internal.Util.Binary
+                       Network.QUIC.Internal.UDP
+                       Network.QUIC.Internal.Version
   
   build-depends:        base >= 4.7 && < 5
                       , bytestring
@@ -45,6 +48,7 @@ library
                       , uuid
                       , binary
                       , tls
+                      , network
       
 --  ghc-options:         -Wall
   default-language:    Haskell2010
