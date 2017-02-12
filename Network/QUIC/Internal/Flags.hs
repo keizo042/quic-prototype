@@ -1,4 +1,6 @@
-module Network.QUIC.Internal.Flags where
+module Network.QUIC.Internal.Flags 
+  (
+  )where
 import Data.Binary.Get
 import Data.Binary.Put
 import Data.Int

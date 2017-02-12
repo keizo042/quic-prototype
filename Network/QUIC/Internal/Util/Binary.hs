@@ -9,9 +9,12 @@ module Network.QUIC.Internal.Util.Binary
     , getIntNbyte
 
     , getStreamID
+    , putStreamID
+
+    , getConnectionID
+    , putConnectionID
     , getErrorCode
 
-    , putStreamID
   )where
 import Data.Int(Int8)
 import Data.Bits
@@ -19,6 +22,7 @@ import Data.Binary
 import qualified Data.Binary.Get as Get
 import qualified Network.QUIC.Error as E
 import Network.QUIC.Internal 
+import Network.QUIC.Types 
 
 
 getInt1byte :: Get Int
@@ -60,5 +64,10 @@ getStreamID n =  getIntNbyte n
 putStreamID :: Int -> StreamID -> Put
 putStreamID = undefined
 
+getConnectionID :: Int -> Get ConnectionID
+getConnectionID = undefined
+
+putConnectionID :: Int -> Get ConnectionID
+putConnectionID = undefined
 getErrorCode :: Get E.ErrorCodes
 getErrorCode = E.int2err <$> getInt4byte
