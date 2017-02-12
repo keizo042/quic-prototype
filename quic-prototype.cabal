@@ -19,10 +19,10 @@ library
   exposed-modules:     Network.QUIC
                        Network.QUIC.Decode
                        Network.QUIC.Encode
-                       Network.QUIC.Types
                        Network.QUIC.Frame
                        Network.QUIC.Header
                        Network.QUIC.Error
+                       Network.QUIC.Types
 
   other-modules:       Network.QUIC.Internal
                        Network.QUIC.Internal.FEC
