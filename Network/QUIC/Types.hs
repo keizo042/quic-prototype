@@ -5,3 +5,8 @@ module Network.QUIC.Types (
 
 
 type ByteSize = Int
+
+type ConnectionID = Int
+
+data ByteSizeInfo = NoInfo
+                  deriving Show
