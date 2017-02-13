@@ -10,6 +10,7 @@ module Network.QUIC.Types (
   )where
 
 
+
 type PacketNumber = Integer
 
 type ConnectionID = Integer

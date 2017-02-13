@@ -8,6 +8,7 @@ import Data.Binary.Get
 import Data.Binary.Put
 import Data.Word
 import Data.Time
+import Data.UnixTime
 import Data.Bits
 
 import qualified Data.ByteString.Lazy as BSL
