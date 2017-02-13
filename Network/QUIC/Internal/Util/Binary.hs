@@ -22,10 +22,13 @@ module Network.QUIC.Internal.Util.Binary
     , getErrorCode
     , putErrorCode
 
+    , putReasonPhase
+
   )where
 import Data.Int(Int8)
 import Data.Bits
 import Data.Binary
+import qualified Data.ByteString as BS
 import qualified Data.Binary.Get as Get
 import qualified Network.QUIC.Error as E
 import Network.QUIC.Internal 
@@ -96,4 +99,10 @@ putErrorCode e = do
   where 
         convert :: Int -> [Word8]
         convert = undefined
+
+getReasonPhase :: Get E.ErrorCodes
+getReasonPhase = undefined
+
+putReasonPhase :: BS.ByteString -> Put
+putReasonPhase = undefined
 

@@ -1,6 +1,6 @@
 module Network.QUIC.Internal.Frame.Stream 
   (
-    StreamFrame(..)
+      StreamFrame(..)
     , encodeStreamFrame
     , decodeStreamFrame
   )where

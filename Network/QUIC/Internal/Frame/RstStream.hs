@@ -1,5 +1,8 @@
 module Network.QUIC.Internal.Frame.RstStream 
   (
+    RstStreamFrame(..)
+    , encodeRstStreamFrame
+    , decodeRstStreamFrame
   )where
 import Data.Binary.Get
 import Data.Binary.Put
@@ -10,24 +13,22 @@ import qualified Network.QUIC.Error as E
 import Network.QUIC.Types
 import Network.QUIC.Internal.Util.Binary
 
-data RstStreamFrame = RstStreamFrame  !StreamID !Offset !E.ErrorCodes
-                    {-
-                                      , rstStreamByteOffset :: !Int
+data RstStreamFrame = RstStreamFrame  { rstStreamStreamID   :: !StreamID 
+                                      , rstStreamByteOffset :: !Offset
                                       , rstStreamErrCode    :: !E.ErrorCodes
                                       } deriving Show
-                                      -}
 
 
-encodeFrameRstStream :: RstStreamFrame -> ByteString
-encodeFrameRstStream (RstStreamFrame streamID offset errCode) = runPut put
+encodeRstStreamFrame :: RstStreamFrame -> ByteString
+encodeRstStreamFrame (RstStreamFrame streamID offset errCode) = runPut put
   where
     put :: Put
     put = putStreamID (countStreamIDbyteSize streamID) streamID >> 
           putOffset (countOffsetByteSize offset) offset >>
           putErrorCode errCode
 
-decodeFrameRstStream :: ByteString -> E.QUICResult (RstStreamFrame, ByteString)
-decodeFrameRstStream bs =  case runGetOrFail (get n) bs of
+decodeRstStreamFrame :: ByteString -> E.QUICResult (RstStreamFrame, ByteString)
+decodeRstStreamFrame bs =  case runGetOrFail (get n) bs of
                                   Right (bs, _, frame) -> case frame of
                                                                Right f -> Right (f, bs)
                                                                Left e -> Left e

@@ -1,4 +1,9 @@
-module Network.QUIC.Internal.Frame.Ack where
+module Network.QUIC.Internal.Frame.Ack 
+  (
+      AckFrame
+    , encodeAckFrame
+    , decodeAckFrame
+  )where
 import Data.Binary.Get
 import Data.Binary.Put
 import Data.Word
@@ -39,9 +44,7 @@ decodeAckFrame bs = case runGetOrFail get bs of
       f <- getWord8
       ackedLen <- getAckedLen (ackedLenSize f)
       delay <- getDelayTime 
-      numBlockLen <- if (hasRange f)
-                       then  undefined
-                       else  return 0
+      numBlockLen <- if (hasRange f) then  undefined else  return 0
       return $ Right undefined
         where
           hasRange :: Word8 -> Bool
