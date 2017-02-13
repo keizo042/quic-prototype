@@ -25,24 +25,21 @@ data StreamFrame = StreamFrame { streamHasFin :: !Bool
                      } deriving (Show, Eq)
 
 decodeStreamFrame :: BSL.ByteString -> E.QUICResult (StreamFrame, BSL.ByteString)
-decodeStreamFrame  bs = case runGetOrFail  get' $ BSL.tail bs of
+decodeStreamFrame  bs = case runGetOrFail  get bs of
                                                              Right (b, _, frame) -> case frame of
                                                                                           Right f     -> Right (f, b)
                                                                                           (Left e)  -> Left e
                                                              Left _ -> Left E.InvalidFrameData
   where
-    b = BSL.head bs
-    get' = get  (wordHasStreamFin b)  
-                (wordHasStreamDataLenField b)
-                (word2streamOffsetSize b)  
-                (word2streamStreamIdSize b)
 
-    get :: Bool -> 
-           Bool -> 
-           Int -> 
-           Int ->
-           Get (E.QUICResult StreamFrame)
-    get  fin hasDataLen offsetSize streamIDSize = do
+    get :: Get (E.QUICResult StreamFrame)
+    get = do
+        b <- getWord8
+        let fin = wordHasStreamFin b
+            hasDataLen = wordHasStreamDataLenField b
+            offsetSize = word2streamOffsetSize b
+            streamIDSize = word2streamStreamIdSize b
+
         streamID <- getStreamID streamIDSize
         offset <- getIntNbyte offsetSize
         dataLen <- if hasDataLen then getInt2byte else return 0
@@ -62,7 +59,7 @@ wordHasStreamDataLenField :: Word8 -> Bool
 wordHasStreamDataLenField i = i .&. 0x20 == 0x20
 
 
-word2streamOffsetSize :: Word8 -> Int
+word2streamOffsetSize :: Word8 -> ByteSize
 word2streamOffsetSize i = case i .&. 0x1c of
                         0x00 -> 0
                         0x04 -> 1
@@ -82,7 +79,7 @@ streamOffsetSize2word i = case i of
                          8 -> 0x03
                          _ -> undefined
 
-word2streamStreamIdSize :: Word8 -> Int
+word2streamStreamIdSize :: Word8 -> ByteSize
 word2streamStreamIdSize i = case i .&. 0x03 of
                        0x00 -> 1
                        0x01 -> 2
@@ -93,10 +90,10 @@ word2streamStreamIdSize i = case i .&. 0x03 of
 streamStreamIDSize2word :: Int -> Word8
 streamStreamIDSize2word = undefined
 
-checkStreamIDSize :: StreamID -> Int
+checkStreamIDSize :: StreamID -> ByteSize
 checkStreamIDSize = undefined
 
-checkOffsetLen :: Int -> Int
+checkOffsetLen :: Int -> ByteSize
 checkOffsetLen = undefined
 
 putOffset :: Int -> Put
@@ -110,7 +107,7 @@ encodeStreamFrame (StreamFrame hasFin hasDataLen offset streamID streamData) = r
                                                                                   (checkStreamIDSize streamID) 
                                                                                   (checkOffsetLen offset)
   where
-    put :: Int -> Int -> Put 
+    put :: ByteSize -> ByteSize -> Put 
     put streamIDSize offsetSize = do
       putWord8 flag
       putStreamID streamIDSize streamID

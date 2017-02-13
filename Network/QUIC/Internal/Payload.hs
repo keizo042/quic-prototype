@@ -1,4 +1,7 @@
-module Network.QUIC.Internal.Payload where
+module Network.QUIC.Internal.Payload 
+  (
+    Payload(..)
+  )where
 import Network.QUIC.Internal.Frame
 
 data Payload = Stream StreamFrame

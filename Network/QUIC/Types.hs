@@ -2,6 +2,7 @@ module Network.QUIC.Types (
   ByteSize
   , ByteSizeInfo
   , ConnectionID
+  , StreamID
   , PacketNumber
   )where
 
@@ -9,6 +10,8 @@ module Network.QUIC.Types (
 type PacketNumber = Integer
 
 type ConnectionID = Integer
+
+type StreamID = Int
 
 type ByteSize = Int
 

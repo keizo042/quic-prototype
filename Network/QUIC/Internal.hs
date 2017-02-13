@@ -1,3 +1,4 @@
-module Network.QUIC.Internal where
+module Network.QUIC.Internal 
+  (
+  )where
 
-type StreamID = Int

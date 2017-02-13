@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Network.QUIC.Encode where
+module Network.QUIC.Encode 
+  (
+  )where
 
 import Data.ByteString      (ByteString (..))
 import qualified Data.ByteString      as BS
