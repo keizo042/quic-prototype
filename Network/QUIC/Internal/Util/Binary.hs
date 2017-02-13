@@ -22,14 +22,19 @@ module Network.QUIC.Internal.Util.Binary
     , getErrorCode
     , putErrorCode
 
+    , getReasonPhase
     , putReasonPhase
 
   )where
 import Data.Int(Int8)
 import Data.Bits
-import Data.Binary
 import qualified Data.ByteString as BS
-import qualified Data.Binary.Get as Get
+import qualified Data.ByteString.Lazy as BSL
+
+import Data.Binary
+import Data.Binary.Get 
+import Data.Binary.Put 
+
 import qualified Network.QUIC.Error as E
 import Network.QUIC.Internal 
 import Network.QUIC.Types 
@@ -64,9 +69,14 @@ getIntNbyte n = foldl f 0 <$> list
     f n (x,i) = n + (shiftL (i * 8) $ toInt x)
 
     list :: Get [(Int8, Int)]
-    list = (\xs -> zip xs [0..])  <$> (sequence $ replicate n Get.getInt8)  
+    list = (\xs -> zip xs [0..])  <$> (sequence $ replicate n getInt8)  
 
     toInt = fromIntegral . toInteger
+
+
+-- putIntNbyte helper functon
+convert :: Num a => a -> [Word8]
+convert = undefined
 
 putIntNbyte :: Int -> [Word8] ->  Put
 putIntNbyte = undefined
@@ -94,15 +104,15 @@ getErrorCode :: Get E.ErrorCodes
 getErrorCode = E.int2err <$> getInt4byte
 
 putErrorCode :: E.ErrorCodes -> Put
-putErrorCode e = do
-  putIntNbyte 4  (convert $ E.err2int e)
-  where 
-        convert :: Int -> [Word8]
-        convert = undefined
+putErrorCode e = putIntNbyte 4  (convert $ E.err2int e)
 
-getReasonPhase :: Get E.ErrorCodes
-getReasonPhase = undefined
+getReasonPhase :: Get BS.ByteString
+getReasonPhase = BSL.toStrict <$> (fromIntegral <$> getInt2byte >>=  getLazyByteString)
+
 
 putReasonPhase :: BS.ByteString -> Put
-putReasonPhase = undefined
+putReasonPhase bs = do
+  putIntNbyte 2 ( convert $ BS.length  bs)
+  putByteString bs
+
 

@@ -27,8 +27,5 @@ decodeConnectionClosedFrame bs =  case runGetOrFail get bs of
                                          Left _ -> Left E.InvalidConnectionCloseData
   where
     get :: Get ConnectionCloseFrame
-    get = ConnectionCloseFrame <$> getErrorCode <*> reason
-      where
-        reason :: Get BS.ByteString
-        reason = BSL.toStrict <$> (fromIntegral <$> getInt2byte >>=  getLazyByteString)
+    get = ConnectionCloseFrame <$> getErrorCode <*> getReasonPhase
 
