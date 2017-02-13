@@ -19,7 +19,7 @@ import Network.QUIC.Internal.Util.Binary
 
 data StreamFrame = StreamFrame { streamHasFin :: !Bool
                      , streamHasDataLenField :: !Bool
-                     , streamOffset :: !Int
+                     , streamOffset :: !Offset
                      , streamStreamId :: !Int
                      , streamStreamData :: !BS.ByteString
                      } deriving (Show, Eq)
@@ -41,7 +41,7 @@ decodeStreamFrame  bs = case runGetOrFail  get bs of
             streamIDSize = word2streamStreamIdSize b
 
         streamID <- getStreamID streamIDSize
-        offset <- getIntNbyte offsetSize
+        offset <- getOffset offsetSize
         dataLen <- if hasDataLen then getInt2byte else return 0
         streamData <- getData dataLen
         return $ Right $ StreamFrame fin hasDataLen offset streamID streamData
@@ -90,11 +90,6 @@ word2streamStreamIdSize i = case i .&. 0x03 of
 streamStreamIDSize2word :: Int -> Word8
 streamStreamIDSize2word = undefined
 
-countOffsetByteSize :: Int -> ByteSize
-countOffsetByteSize = undefined
-
-putOffset :: Int -> Put
-putOffset size =  undefined
 
 putData :: BS.ByteString -> Put
 putData = undefined
@@ -106,7 +101,7 @@ encodeStreamFrame (StreamFrame hasFin hasDataLen offset streamID streamData) = r
     put = do
       putWord8 flag
       putStreamID  streamIDSize streamID
-      putOffset  offsetSize
+      putOffset offsetSize offset
       putData streamData
       where
         streamIDSize = countStreamIDbyteSize streamID

@@ -10,12 +10,17 @@ module Network.QUIC.Internal.Util.Binary
 
     , putIntNbyte
 
+    , getOffset
+    , putOffset
+
     , getStreamID
     , putStreamID
 
     , getConnectionID
     , putConnectionID
+
     , getErrorCode
+    , putErrorCode
 
   )where
 import Data.Int(Int8)
@@ -60,7 +65,7 @@ getIntNbyte n = foldl f 0 <$> list
 
     toInt = fromIntegral . toInteger
 
-putIntNbyte :: Int -> Put
+putIntNbyte :: Int -> [Word8] ->  Put
 putIntNbyte = undefined
 
 getStreamID :: ByteSize -> Get StreamID
@@ -75,5 +80,20 @@ getConnectionID = undefined
 putConnectionID :: ByteSize -> Get ConnectionID
 putConnectionID = undefined
 
+getOffset :: ByteSize -> Get Offset
+getOffset = undefined
+
+putOffset :: ByteSize -> Offset -> Put
+putOffset = undefined
+
+
 getErrorCode :: Get E.ErrorCodes
 getErrorCode = E.int2err <$> getInt4byte
+
+putErrorCode :: E.ErrorCodes -> Put
+putErrorCode e = do
+  putIntNbyte 4  (convert $ E.err2int e)
+  where 
+        convert :: Int -> [Word8]
+        convert = undefined
+
