@@ -11,15 +11,14 @@ import Network.QUIC.Internal.Util.Binary
 
 data ConnectionCloseFrame =  ConnectionCloseFrame  { connectionClosedErrorCode :: !E.ErrorCodes
                                                    , connectionClosedreasonPhase :: !BS.ByteString
-                                                   } deriving Show
+                                                   } deriving (Show, Eq)
 
 
 encodeConnectionCloseFrame :: ConnectionCloseFrame -> BSL.ByteString
 encodeConnectionCloseFrame (ConnectionCloseFrame errCode reasonPhase) = runPut put
   where
     put :: Put
-    put = putErrorCode errCode >>
-          putReasonPhase reasonPhase
+    put = putErrorCode errCode >> putReasonPhase reasonPhase
 
 decodeConnectionClosedFrame ::  BSL.ByteString -> E.QUICResult (ConnectionCloseFrame, BSL.ByteString)
 decodeConnectionClosedFrame bs =  case runGetOrFail get bs of

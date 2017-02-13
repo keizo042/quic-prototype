@@ -11,15 +11,15 @@ import Network.QUIC.Types
 import Network.QUIC.Internal.Util.Binary
 
 
-data BlockedFrame = BlockedFrame { blockedStreamID :: !StreamID } deriving Show
+data BlockedFrame = BlockedFrame { blockedStreamID :: !StreamID } deriving (Show, Eq)
 
-decodeBlockedFrame  :: ByteSize -> BSL.ByteString -> E.QUICResult (BlockedFrame, BSL.ByteString)
-decodeBlockedFrame size bs = case runGetOrFail get bs of
+decodeBlockedFrame  :: BSL.ByteString -> ByteSize -> E.QUICResult (BlockedFrame, BSL.ByteString)
+decodeBlockedFrame bs n = case runGetOrFail get bs of
                                Right (bs, _, frame) -> Right (frame, bs)
                                Left _               -> Left E.InvalidBlockedData
   where
     get :: Get BlockedFrame
-    get = BlockedFrame <$> getStreamID size 
+    get = BlockedFrame <$> getStreamID n
 
 encodeBlockedFrame :: BlockedFrame -> BSL.ByteString
 encodeBlockedFrame (BlockedFrame streamID) = runPut put

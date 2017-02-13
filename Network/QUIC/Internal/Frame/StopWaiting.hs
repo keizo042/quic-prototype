@@ -18,11 +18,9 @@ decodeFrameStopWaiting bs n =  case runGetOrFail get bs of
                                Left _               -> Left E.InvalidStopWaitingData
   where
     get :: Get StopWaitingFrame
-    get = StopWaitingFrame <$> (getIntNbyte n)
+    get = StopWaitingFrame <$> (getStreamID n)
 
 encodeStopWaitingFrame :: StopWaitingFrame -> ByteString
 encodeStopWaitingFrame (StopWaitingFrame delta) = runPut put 
   where
-    put = undefined
-    countSize :: Int -> ByteSize
-    countSize = undefined
+    put = putStreamID (countStreamIDbyteSize delta) delta

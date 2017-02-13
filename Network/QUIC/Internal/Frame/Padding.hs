@@ -6,9 +6,10 @@ import Data.ByteString.Lazy
 
 
 data PaddingFrame = PaddingFrame
+                    deriving (Show,Eq)
 
 decodeFramePadding :: ByteString -> QUICResult (PaddingFrame, ByteString)
 decodeFramePadding bs = Right (PaddingFrame, empty)
 
 encodeFramePadding :: PaddingFrame -> ByteString
-encodeFramePadding = undefined
+encodeFramePadding PaddingFrame = runPut $ putWord8 0x00

@@ -10,6 +10,9 @@ module Network.QUIC.Internal.Util.Binary
 
     , putIntNbyte
 
+    , getPacketNumber
+    , putPacketNumber
+
     , getOffset
     , putOffset
 
@@ -80,6 +83,12 @@ convert = undefined
 
 putIntNbyte :: Int -> [Word8] ->  Put
 putIntNbyte = undefined
+
+getPacketNumber :: ByteSize -> Get PacketNumber
+getPacketNumber = undefined
+
+putPacketNumber :: ByteSize -> PacketNumber -> Put
+putPacketNumber n number = putIntNbyte n $ convert number
 
 getStreamID :: ByteSize -> Get StreamID
 getStreamID n =  getIntNbyte n
