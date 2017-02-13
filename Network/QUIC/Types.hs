@@ -1,6 +1,6 @@
 module Network.QUIC.Types (
   ByteSize
-  , ByteSizeInfo
+  , ByteSizeInfo(..)
   , ConnectionID
   , StreamID
   , countStreamIDbyteSize
@@ -20,4 +20,5 @@ countStreamIDbyteSize i = undefined
 type ByteSize = Int
 
 data ByteSizeInfo = NoInfo
+                  | StopWaitingInfo  ByteSize
                   deriving Show

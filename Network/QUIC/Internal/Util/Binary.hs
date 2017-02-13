@@ -8,6 +8,8 @@ module Network.QUIC.Internal.Util.Binary
     , getInt8byte
     , getIntNbyte
 
+    , putIntNbyte
+
     , getStreamID
     , putStreamID
 
@@ -57,6 +59,9 @@ getIntNbyte n = foldl f 0 <$> list
     list = (\xs -> zip xs [0..])  <$> (sequence $ replicate n Get.getInt8)  
 
     toInt = fromIntegral . toInteger
+
+putIntNbyte :: Int -> Put
+putIntNbyte = undefined
 
 getStreamID :: ByteSize -> Get StreamID
 getStreamID n =  getIntNbyte n
