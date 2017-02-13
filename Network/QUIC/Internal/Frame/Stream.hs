@@ -90,11 +90,8 @@ word2streamStreamIdSize i = case i .&. 0x03 of
 streamStreamIDSize2word :: Int -> Word8
 streamStreamIDSize2word = undefined
 
-checkStreamIDSize :: StreamID -> ByteSize
-checkStreamIDSize = undefined
-
-checkOffsetLen :: Int -> ByteSize
-checkOffsetLen = undefined
+countOffsetByteSize :: Int -> ByteSize
+countOffsetByteSize = undefined
 
 putOffset :: Int -> Put
 putOffset size =  undefined
@@ -104,16 +101,16 @@ putData = undefined
 
 encodeStreamFrame :: StreamFrame -> BSL.ByteString
 encodeStreamFrame (StreamFrame hasFin hasDataLen offset streamID streamData) = runPut $ put 
-                                                                                  (checkStreamIDSize streamID) 
-                                                                                  (checkOffsetLen offset)
   where
-    put :: ByteSize -> ByteSize -> Put 
-    put streamIDSize offsetSize = do
+    put :: Put
+    put = do
       putWord8 flag
-      putStreamID streamIDSize streamID
-      putOffset offsetSize
+      putStreamID  streamIDSize streamID
+      putOffset  offsetSize
       putData streamData
       where
+        streamIDSize = countStreamIDbyteSize streamID
+        offsetSize = countOffsetByteSize offset
         flag = 0x80 
           .|.  (if hasFin then 0x40 else 0x00)
           .|. (if hasDataLen then 0x20 else 0x00)
