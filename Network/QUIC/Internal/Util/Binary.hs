@@ -58,16 +58,17 @@ getIntNbyte n = foldl f 0 <$> list
 
     toInt = fromIntegral . toInteger
 
-getStreamID :: Int -> Get StreamID
+getStreamID :: ByteSize -> Get StreamID
 getStreamID n =  getIntNbyte n
 
-putStreamID :: Int -> StreamID -> Put
+putStreamID :: ByteSize -> StreamID -> Put
 putStreamID = undefined
 
-getConnectionID :: Int -> Get ConnectionID
+getConnectionID :: ByteSize -> Get ConnectionID
 getConnectionID = undefined
 
-putConnectionID :: Int -> Get ConnectionID
+putConnectionID :: ByteSize -> Get ConnectionID
 putConnectionID = undefined
+
 getErrorCode :: Get E.ErrorCodes
 getErrorCode = E.int2err <$> getInt4byte
