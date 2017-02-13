@@ -36,6 +36,7 @@ library
                        Network.QUIC.Internal.Frame.RstStream
                        Network.QUIC.Internal.Frame.Padding
                        Network.QUIC.Internal.Frame.StopWaiting
+                       Network.QUIC.Internal.Frame.GoAway
                        Network.QUIC.Internal.Util.Binary
                        Network.QUIC.Internal.UDP
                        Network.QUIC.Internal.Version
